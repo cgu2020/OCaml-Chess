@@ -1,6 +1,5 @@
-type tile = Tile
 
-val move_piece : tile -> tile -> bool 
+val move_piece : Tile.tile -> Tile.tile -> bool 
 
 
 
