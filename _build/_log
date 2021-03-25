@@ -1,0 +1,28 @@
+### Starting build.
+# Target: chess_board.mli.depends, tags: { package(ANSITerminal), package(ounit2), package(yojson), extension:mli, file:chess_board.mli, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package ounit2 -package yojson -package ANSITerminal -modules chess_board.mli > chess_board.mli.depends
+# Target: chess_board.cmi, tags: { package(ANSITerminal), package(ounit2), package(yojson), byte, compile, extension:mli, file:chess_board.mli, interf, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package ounit2 -package yojson -package ANSITerminal -o chess_board.cmi chess_board.mli
+# Target: chess_board.ml.depends, tags: { package(ANSITerminal), package(ounit2), package(yojson), extension:ml, file:chess_board.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package ounit2 -package yojson -package ANSITerminal -modules chess_board.ml > chess_board.ml.depends
+# Target: chess_board.cmo, tags: { package(ANSITerminal), package(ounit2), package(yojson), byte, compile, extension:cmo, extension:ml, file:chess_board.cmo, file:chess_board.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package ounit2 -package yojson -package ANSITerminal -o chess_board.cmo chess_board.ml
+# Target: game_logic.mli.depends, tags: { package(ANSITerminal), package(ounit2), package(yojson), extension:mli, file:game_logic.mli, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package ounit2 -package yojson -package ANSITerminal -modules game_logic.mli > game_logic.mli.depends
+# Target: tile.mli.depends, tags: { package(ANSITerminal), package(ounit2), package(yojson), extension:mli, file:tile.mli, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package ounit2 -package yojson -package ANSITerminal -modules tile.mli > tile.mli.depends
+# Target: tile.cmi, tags: { package(ANSITerminal), package(ounit2), package(yojson), byte, compile, extension:mli, file:tile.mli, interf, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package ounit2 -package yojson -package ANSITerminal -o tile.cmi tile.mli
+# Target: game_logic.cmi, tags: { package(ANSITerminal), package(ounit2), package(yojson), byte, compile, extension:mli, file:game_logic.mli, interf, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package ounit2 -package yojson -package ANSITerminal -o game_logic.cmi game_logic.mli
+# Target: game_logic.ml.depends, tags: { package(ANSITerminal), package(ounit2), package(yojson), extension:ml, file:game_logic.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package ounit2 -package yojson -package ANSITerminal -modules game_logic.ml > game_logic.ml.depends
+# Target: game_logic.cmo, tags: { package(ANSITerminal), package(ounit2), package(yojson), byte, compile, extension:cmo, extension:ml, file:game_logic.cmo, file:game_logic.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package ounit2 -package yojson -package ANSITerminal -o game_logic.cmo game_logic.ml
++ ocamlfind ocamlc -c -package ounit2 -package yojson -package ANSITerminal -o game_logic.cmo game_logic.ml
+File "game_logic.ml", line 18, characters 4-9:
+18 |   | Empty -> raise NonValidFirstPiece
+         ^^^^^
+Error: Unbound constructor Empty
+Command exited with code 2.
+# Compilation unsuccessful.

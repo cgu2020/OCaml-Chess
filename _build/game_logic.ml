@@ -14,7 +14,7 @@ val move_king : tile -> tile list*)
 exception NonValidFirstPiece
 
 exception NonValidMove
-let check_validity (tile1 : Tile.tile) (tile2: Tile.tile) = match tile1 with 
+let check_validity (tile1: Tile.tile) tile2 = match tile1 with
   | Empty -> raise NonValidFirstPiece
   | _  ->
     if tile2 = Empty then true (*Change empty to tile 2 in in the list of move_piecename *)

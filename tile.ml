@@ -7,7 +7,7 @@ type tile = {
   coord : int * int
 }
 
-type team = int
+let get_piece t = t.piece
 
 let point_value (t:tile) : int =
   match t.piece with
