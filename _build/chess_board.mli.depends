@@ -1,1 +1,1 @@
-chess_board.mli:
+chess_board.mli: Tile
