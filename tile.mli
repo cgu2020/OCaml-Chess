@@ -13,3 +13,7 @@ val get_position : tile -> int*int
 val empty_tile : tile
 
 val pawn : tile
+
+val empty_tile : tile
+
+val parse_piece : string -> int -> int -> tile

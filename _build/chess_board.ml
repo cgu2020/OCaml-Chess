@@ -1,38 +1,8 @@
 open Tile
 exception InvalidMove
-(**let check_validity (tile1 : Tile.tile) (tile2: Tile.tile) =
-  let x = Tile.get_piece tile1 in 
-  match tile1 with 
-  |  -> raise InvalidMove
-  | _  ->
-    if tile2 = Empty then true (*Change empty to tile 2 in in the list of move_piecename *)
-    else if tile2.team = tile1.team then 
-      raise NonValidMove
-    else false*)
-
-
-(*val move_queen : tile -> tile list
-
-val move_king : tile -> tile list
-
-val move_pawn : tile -> tile list
-
-val move_knight : tile -> tile list
-
-val move_bishop : tile -> tile list
-
-val move_king : tile -> tile list*)
 
 type board = Tile.tile array array
 
-
-
-let init : board = 
-  Array.make_matrix 8 8 (Tile.empty_tile) 
-  (*in 
-  a.(1).(4) <- Tile.pawn*)
-
-(** *)
 let rec inc_horz_vert start curr_loc acc multiplier numbers = 
   match numbers with 
   | [] -> acc
@@ -42,57 +12,109 @@ let rec inc_horz_vert start curr_loc acc multiplier numbers =
     else 
       inc_horz_vert start curr_loc acc multiplier t
 
-(* given a tile, returns all of the horizontal and vertical moves that it can go to. *)
-(*let horiz_vert_posib t acc = 
-  let pos = get_position t in  
-  let start_vert = (pos / 8)  in 
-  let start_horz = (pos mod 8) in 
-  inc_horz_vert (start_vert* 8) start_horz [] 1 [0;1;2;3;4;5;6;7] @ 
-  inc_horz_vert start_horz start_vert [] 8 [0;1;2;3;4;5;6;7]*)
-
-
 let rec horz start (row_num:int) lower upper acc = 
   if start > lower then 
-    horz start row_num (lower + 1) upper ((row_num,lower)::acc)
+    horz start row_num (lower + 1) upper ((row_num,lower mod 8)::acc)
   else if start < upper then 
-    horz start row_num lower (upper - 1) ((row_num,upper)::acc)
+    horz start row_num lower (upper - 1) ((row_num,upper mod 8)::acc)
   else acc
 
 let rec vert start (col_num:int) lower upper acc = 
   if start > lower then 
-    vert start col_num (lower + 8) upper ((lower,col_num)::acc)
+    vert start col_num (lower + 8) upper ((lower / 8,col_num)::acc)
   else if start < upper then 
-    vert start col_num lower (upper - 8) ((upper,col_num)::acc)
+    vert start col_num lower (upper - 8) ((upper / 8,col_num)::acc)
   else acc
-  (*)
-let horiz_vert_posib t acc = 
-  let pos_tupl = (get_position t) in  
-  let pos = fst pos_tupl 
-  let row_num = (pos / 8)  in 
-  let col_num = (pos mod 8) in 
-  horz pos row_num (row_num * 8) (row_num * 8 + 7) [] @
-  vert pos col_num col_num (col_num + 56) []*)
 
-let possible_moves p = 
+let rec diagonal_up_left row col acc fst = 
+  if row > 0 && col > 0 && fst then 
+    diagonal_up_left (row - 1) (col - 1) acc false 
+  else if row > 0 && col > 0 then 
+    diagonal_up_left (row - 1) (col - 1) ((row,col)::acc) false
+  else if fst then acc
+  else (row,col) :: acc
+
+let rec diagonal_up_right row col acc fst = 
+    if row > 0 && col < 8 && fst then 
+      diagonal_up_right (row - 1) (col + 1) acc false 
+    else if row > 0 && col < 8 then 
+      diagonal_up_right (row - 1) (col + 1) ((row,col)::acc) false
+    else if fst then acc
+    else (row,col) :: acc
+
+let rec diagonal_down_right row col acc fst = 
+  if row < 8 && col < 8 && fst then 
+    diagonal_down_right (row + 1) (col + 1) acc false 
+  else if row < 8 && col < 8 then 
+    diagonal_down_right (row + 1) (col + 1) ((row,col)::acc) false
+  else if fst then acc
+  else (row,col) :: acc
+
+let rec diagonal_down_left row col acc fst = 
+    if row < 8 && col > 0 && fst then 
+      diagonal_down_left (row + 1) (col - 1) acc false 
+    else if row < 8 && col > 0 then 
+      diagonal_down_left (row + 1) (col - 1) ((row,col)::acc) false
+    else if fst then acc
+    else (row,col) :: acc
+
+(** Important Big Boi *)
+let diagonal cord =
+  let row = fst cord in 
+  let col = snd cord in
+  diagonal_down_left row col [] true @ 
+  diagonal_up_right row col [] true @ 
+  diagonal_up_left row col [] true @ 
+  diagonal_down_right row col [] true
+
+let horiz_vert_posib cord = 
+  let row = fst cord in 
+  let col = snd cord in
+  let pos = row*8+col in 
+  horz pos row (row * 8) (row * 8 + 7) [] @
+  vert pos col col (col + 56) []
+
+let king_move cord = 
+  let row = fst cord in 
+  let col = snd cord in
+  let lst = [(row-1,col-1);(row-1,col);(row-1,col+1);(row, col-1);
+  (row, col+1); (row+1,col-1);(row+1,col); (row+1,col+1)] in 
+  List.filter (fun (x,y) -> x >= 0 && x <= 7 && y >= 0 && y <= 7) lst
+
+let possible_moves p cord = 
   match get_piece p with 
-  | King ->  false
-  | Queen -> true
+  | King ->  king_move cord
+  | Queen -> horiz_vert_posib cord @ diagonal cord
+  | Bishop -> diagonal cord
+  | Rook -> horiz_vert_posib cord
+  | _ -> []
 
-
-let check_move_validity (b:board) x y x2 y2 = 
-  (*if x2,y2 is within the possible moves depending on the piece*)
-  let init_tile = b.(x).(y) in 
-  let final_tile = b.(x2).(y2) in 
-  if get_color init_tile = get_color final_tile then
-    false
-  else
-    true
-
-
-  (*let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) (p : tile): unit =
-  if(valid_move b x y x2 y2) then 
-    failwith("unimplemented")
-else
-  raise InvalidMove*)
+let starterboard = 
+  "r,n,b,k,q,b,n,r/p,p,p,p,p,p,p,p/ , , , , , , , / , , , , , , , / , , , , , , , / , , , , , , , /P,P,P,P,P,P,P,P/R,N,B,K,Q,B,N,R"
   
+let string_to_lists (s:string) = let r = String.split_on_char '/' s in 
+  List.map (fun x -> String.split_on_char ',' x) r
+
+let rec initialize_row (b:board) (r:int) (c:int) (p: string list): unit = 
+  match p with
+  | [] -> ()
+  | h::t -> b.(r).(c) <- parse_piece h r c; initialize_row b r (c+1) t 
+
+let rec initialize (b:board) (s:string list list) (r:int): unit= 
+  match s with 
+  | [] -> ()
+  | h::t -> initialize_row b r 0 h; initialize b t (r+1)
+
+let init : board = Array.make_matrix 8 8 (empty_tile)
+
+let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) : unit = 
+  let piece1 = b.(x).(y) in
+  b.(x2).(y2) <- piece1; b.(x).(y) <- empty_tile
+
+let swap_tile (b : board) = failwith ""
+
+let replace_tile (x: int) (y:int) (x2: int) (y2: int) : unit = failwith ""
   
+let clear_tile (b: board) (x:int) (y:int) : unit = failwith ""
+
+(**let check_validity x y x2 y2 : bool = failwith ""*)

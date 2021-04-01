@@ -1,5 +1,5 @@
-(*open Tile
-(*val move_queen : tile -> tile list
+open Tile
+(**val move_queen : tile -> tile list
 
 val move_king : tile -> tile list
 
@@ -11,13 +11,13 @@ val move_bishop : tile -> tile list
 
 val move_king : tile -> tile list*)
 
-exception NonValidFirstPiece
+exception InvalidMove
+let check_validity (tile1 : Tile.tile) (tile2: Tile.tile) =
+  let x = Tile.get_piece tile1 in 
+  match x with 
+  |Pawn -> true
+  |_ -> false
 
-exception NonValidMove
-let check_validity tile1 tile2 = 
-  if (get_piece tile1) =  then
-    true
-  else false
 
 (*  match tile1 with 
   | Empty -> raise NonValidFirstPiece
@@ -26,26 +26,5 @@ let check_validity tile1 tile2 =
     else if tile2.team = tile1.team then 
       raise NonValidMove
     else false
-*)*)
-
-(*val move_queen : tile -> tile list
-
-val move_king : tile -> tile list
-
-val move_pawn : tile -> tile list
-
-val move_knight : tile -> tile list
-
-val move_bishop : tile -> tile list
-
-val move_king : tile -> tile list*)
-
-(**open Tile
-
-exception InvalidMove
-let check_validity (tile1 : Tile.tile) (tile2: Tile.tile) =
-  let x = Tile.get_piece tile1 in 
-  match x with 
-  |Pawn -> true
-  |_ -> false*)
+*)
 
