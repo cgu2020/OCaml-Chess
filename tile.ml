@@ -9,6 +9,10 @@ type tile = {
 
 let get_piece (t:tile) = t.piece
 
+let get_color (t:tile) = t.color
+
+let get_position (t:tile) = t.position
+
 let point_value (t:tile) : int =
   match t.piece with
   |Empty -> 0
@@ -22,8 +26,14 @@ let point_value (t:tile) : int =
   let empty_tile = {
     piece = Empty;
     color = None;
-    position = (0,0)
+    position = (0,0);
   }
+
+  let pawn = {
+  piece = Pawn;
+  color = White;
+  position = (0,0);
+}
 
 let check_capital (s:string) : bool = if String.equal (String.uppercase_ascii s) s then true else false
 
