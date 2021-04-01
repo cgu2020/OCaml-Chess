@@ -30,3 +30,13 @@ let init : board =
 
 let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) : unit =
   failwith ""
+
+let possible_moves (b: board) : board list = failwith ""
+
+let replace_tile (x: int) (y:int) (x2: int) (y2: int) : unit = failwith ""
+  
+let clear_tile (b: board) : unit = failwith ""
+
+let print_board (b: board) : unit = failwith ""
+
+let check_validity x y x2 y2 : bool = failwith ""
