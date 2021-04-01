@@ -1,12 +1,11 @@
-type p
-type c
+type tile 
 
-type tile = {
-  piece : p;
-  color : c;
-  coord : int * int
-}
+type p
 
 val point_value : tile -> int
 
 val get_piece : tile -> p
+
+val empty_tile : tile
+
+val pawn : tile
