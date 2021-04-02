@@ -1,0 +1,5 @@
+To build the system, run 
+make build
+
+To run our project, run
+make play
