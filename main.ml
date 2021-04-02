@@ -11,7 +11,6 @@ let string_piece tile =
   |Queen -> "q"
   |Empty -> ","
 
-
 let rec print_row x y b: unit = match y with 
 | 8 -> print_string "\n"
 | y -> print_string (string_piece b.(x).(y) ^ "  "); print_row x (y+1) b
