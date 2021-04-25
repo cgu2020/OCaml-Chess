@@ -1,4 +1,4 @@
-MODULES=chess_board game_logic tile main
+MODULES=chess_board command game_logic tile main
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -10,7 +10,7 @@ default: build
 	OCAMLRUNPARAM=b utop
 
 build:
-	$(OCAMLBUILD) $(OBJECTS)
+	$(OCAMLBUILD) $(OBJECTS) 
 
 test:
 	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential
@@ -25,7 +25,7 @@ finalcheck:
 	@bash check.sh final
 
 zip:
-	zip adventure.zip *.ml* *.json *.sh _tags .merlin .ocamlformat .ocamlinit LICENSE Makefile	
+	zip chess.zip *.ml* *.txt *.sh _tags .merlin .ocamlformat .ocamlinit Makefile	
 	
 docs: docs-public docs-private
 	
@@ -42,4 +42,4 @@ docs-private: build
 
 clean:
 	ocamlbuild -clean
-	rm -rf _doc.public _doc.private adventure.zip
+	rm -rf _doc.public _doc.private chess.zip
