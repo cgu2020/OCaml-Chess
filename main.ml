@@ -53,13 +53,12 @@ let rec convert_lst_to_coords lst acc = match lst with
 |[] -> acc
 |h :: t ->  convert_lst_to_coords t ((parse h) :: acc)
 
-let rec play_game = let () = print_string "Enter two valid positions (e.g. a2 a4)" 
+let rec play_game b = print b; let () = print_string "Enter two valid positions (e.g. a2 a4)" 
   in let i = read_line () in if i = "a1 a2" then print_string "true" else print_string "false"
 
 let main () = 
   let b = init in
   initialize b (string_to_lists starterboard) 0;
-  print b;
-  play_game
+  play_game b
 
 let () = main()
