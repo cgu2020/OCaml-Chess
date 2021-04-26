@@ -4,28 +4,27 @@ open Command
 
 let get_int c =
   match c with
-|'1' -> 1
-|'2' -> 2
-|'3' -> 3
+|'1' -> 7
+|'2' -> 6
+|'3' -> 5
 |'4' -> 4
-|'5' -> 5
-|'6' -> 6
-|'7' -> 7
-|'8' -> 8
+|'5' -> 3
+|'6' -> 2
+|'7' -> 1
+|'8' -> 0
 |_ -> failwith "impossible"
 
 
-let str_to_coord s = 
-  let y = get_int (String.get s 1) in 
-  match String.get s 0 with
-  |'a' -> (1, y)
-  |'b' -> (2, y)
-  |'c' -> (3, y)
-  |'d' -> (4, y)
-  |'e' -> (5, y)
-  |'f' -> (6, y)
-  |'g' ->(7, y)
-  |'h' -> (8, y)
+let char_to_int c = 
+  match c with
+  |'a' -> 0
+  |'b' -> 1
+  |'c' -> 2
+  |'d' -> 3
+  |'e' -> 4
+  |'f' -> 5
+  |'g' -> 6
+  |'h' -> 7
   | _ -> failwith "impossible"
 
 let string_piece tile =
@@ -49,16 +48,32 @@ let rec print_board x b: unit =
 
 let print b= print_board 0 b
 
-let rec convert_lst_to_coords lst acc = match lst with
-|[] -> acc
-|h :: t ->  convert_lst_to_coords t ((parse h) :: acc)
+let check_valid_move str = match parse str with
+|Move x -> true
+|Quit -> false
+|InvalidMove -> false
 
-let rec play_game b = print b; let () = print_string "Enter two valid positions (e.g. a2 a4)" 
-  in let i = read_line () in if i = "a1 a2" then print_string "true" else print_string "false"
+let get_lst s = match parse s with
+|Move o -> o
+|InvalidMove -> failwith "impossible"
+|Quit -> failwith "impossible"
+
+let rec get_coords lst = match lst with
+| h:: t -> (get_int (String.get h 1)) :: (char_to_int (String.get h 0)) :: (get_coords t)
+| [] -> []
+
+let rec play_game b c = print b; let () = print_string "Enter two valid positions (e.g. a2 a4)" 
+  in let i = read_line () in 
+  if check_valid_move i 
+    then let lst = get_coords (get_lst i) in 
+      if check_validity b (List.nth lst 0) (List.nth lst 1) (List.nth lst 2) (List.nth lst 3) c 
+        then (move_piece b (List.nth lst 0) (List.nth lst 1) (List.nth lst 2) (List.nth lst 3) c; play_game b (c+1))
+        else (print_string "Invalid move, try again\n"; play_game b c)
+    else (print_string "Invalid move, try again\n"; play_game b c)
 
 let main () = 
   let b = init in
   initialize b (string_to_lists starterboard) 0;
-  play_game b
+  play_game b 0
 
 let () = main()

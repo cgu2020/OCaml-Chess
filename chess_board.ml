@@ -3,6 +3,8 @@ exception InvalidMove
 
 type board = Tile.tile array array
 
+type c = None | White | Black
+
 let rec inc_horz_vert start curr_loc acc multiplier numbers = 
   match numbers with 
   | [] -> acc
@@ -107,14 +109,16 @@ let rec initialize (b:board) (s:string list list) (r:int): unit=
 
 let init : board = Array.make_matrix 8 8 (empty_tile)
 
-let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) : unit = 
+let check_validity (b : board) (x : int) (y : int) (x2 : int) (y2 : int) (c :int ) : bool = 
+  if get_piece b.(x).(y) = Empty || 
+    (get_color b.(x).(y) = White && (c mod 2 = 1)) || 
+  (get_color b.(x).(y) = Black && (c mod 2 = 0)) then false
+ else true
+
+  
+(*We call check_validity in main so we assume this move_piece takes valid positions*)
+let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) (c :int ) : unit = 
   let piece1 = b.(x).(y) in
   b.(x2).(y2) <- piece1; b.(x).(y) <- empty_tile
-
-let swap_tile (b : board) = failwith ""
-
-let replace_tile (x: int) (y:int) (x2: int) (y2: int) : unit = failwith ""
-  
-let clear_tile (b: board) (x:int) (y:int) : unit = failwith ""
 
 (**let check_validity x y x2 y2 : bool = failwith ""*)
