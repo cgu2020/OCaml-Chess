@@ -34,7 +34,6 @@ let point_value (t:tile) : int =
   color = White;
   position = (0,0);
 }
-
 let check_capital (s:string) : bool = if String.equal (String.uppercase_ascii s) s then true else false
 
 let parse_piece (s: string) (r:int) (c:int) : tile = 
