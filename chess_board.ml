@@ -5,91 +5,150 @@ type board = Tile.tile array array
 
 type c = None | White | Black
 
-let rec inc_horz_vert start curr_loc acc multiplier numbers = 
-  match numbers with 
-  | [] -> acc
-  | h::t -> 
-    if h != curr_loc then
-      inc_horz_vert start curr_loc (start + h * multiplier :: acc) multiplier t
+(* The next 4 functions are helpers for checking the vertical and horizontal
+possible moves.*)
+let rec check_left_horz row col acc init_color board = 
+  if col > 0 then 
+    if get_piece board.(row).(col - 1) = Empty then 
+      check_left_horz (row) (col - 1) ((row,col) :: acc) init_color board
+    else if get_color board.(row).(col - 1) <> init_color then
+      (row,col) :: (row, col - 1) :: acc
     else 
-      inc_horz_vert start curr_loc acc multiplier t
-
-let rec horz start (row_num:int) lower upper acc = 
-  if start > lower then 
-    horz start row_num (lower + 1) upper ((row_num,lower mod 8)::acc)
-  else if start < upper then 
-    horz start row_num lower (upper - 1) ((row_num,upper mod 8)::acc)
-  else acc
-
-let rec vert start (col_num:int) lower upper acc = 
-  if start > lower then 
-    vert start col_num (lower + 8) upper ((lower / 8,col_num)::acc)
-  else if start < upper then 
-    vert start col_num lower (upper - 8) ((upper / 8,col_num)::acc)
-  else acc
-
-let rec diagonal_up_left row col acc fst = 
-  if row > 0 && col > 0 && fst then 
-    diagonal_up_left (row - 1) (col - 1) acc false 
-  else if row > 0 && col > 0 then 
-    diagonal_up_left (row - 1) (col - 1) ((row,col)::acc) false
-  else if fst then acc
+      (row,col) :: acc
   else (row,col) :: acc
 
-let rec diagonal_up_right row col acc fst = 
-    if row > 0 && col < 8 && fst then 
-      diagonal_up_right (row - 1) (col + 1) acc false 
-    else if row > 0 && col < 8 then 
-      diagonal_up_right (row - 1) (col + 1) ((row,col)::acc) false
-    else if fst then acc
-    else (row,col) :: acc
-
-let rec diagonal_down_right row col acc fst = 
-  if row < 8 && col < 8 && fst then 
-    diagonal_down_right (row + 1) (col + 1) acc false 
-  else if row < 8 && col < 8 then 
-    diagonal_down_right (row + 1) (col + 1) ((row,col)::acc) false
-  else if fst then acc
+let rec check_right_horz row col acc init_color board = 
+  if col < 7 then 
+    if get_piece board.(row).(col + 1) = Empty then 
+      check_right_horz (row) (col + 1) ((row,col) :: acc) init_color board
+    else if get_color board.(row).(col + 1) <> init_color then
+      (row,col) :: (row, col + 1) :: acc
+    else 
+      (row,col) :: acc
+  else (row,col) :: acc
+  
+let rec check_up_vert row col acc init_color board = 
+  if row > 0 then 
+    if get_piece board.(row - 1).(col) = Empty then 
+      check_up_vert (row - 1) (col) ((row,col) :: acc) init_color board
+    else if get_color board.(row - 1).(col) <> init_color then
+      (row,col) :: (row - 1, col) :: acc
+    else 
+      (row,col) :: acc
   else (row,col) :: acc
 
-let rec diagonal_down_left row col acc fst = 
-    if row < 8 && col > 0 && fst then 
-      diagonal_down_left (row + 1) (col - 1) acc false 
-    else if row < 8 && col > 0 then 
-      diagonal_down_left (row + 1) (col - 1) ((row,col)::acc) false
-    else if fst then acc
+let rec check_down_vert row col acc init_color board = 
+  if row < 7 then 
+    if get_piece board.(row + 1).(col) = Empty then 
+      check_down_vert (row + 1) (col) ((row,col) :: acc) init_color board
+    else if get_color board.(row + 1).(col) <> init_color then
+      (row,col) :: (row + 1, col) :: acc
+    else 
+      (row,col) :: acc
+  else (row,col) :: acc
+   
+(* The next 4 functions are helpers for checking the diagonal possible moves.*)
+let rec diagonal_up_left row col acc init_color board = 
+  if row > 0 && col > 0 then
+    if get_piece board.(row - 1).(col - 1) = Empty then 
+      diagonal_up_left (row - 1) (col - 1) ((row,col) :: acc) init_color board
+    else if get_color board.(row - 1).(col - 1) <> init_color then
+      (row,col) :: (row - 1, col - 1) :: acc
+    else 
+      (row,col) :: acc
+  else (row,col) :: acc
+
+let rec diagonal_up_right row col acc init_color board = 
+  if row > 0 && col < 7 then 
+    if get_piece board.(row - 1).(col + 1) = Empty then 
+      diagonal_up_right (row - 1) (col + 1) ((row,col) :: acc) init_color board
+    else if get_color board.(row - 1).(col + 1) <> init_color then
+      (row,col) :: (row - 1, col + 1) :: acc
+    else 
+      (row,col) :: acc
+  else (row,col) :: acc
+
+let rec diagonal_down_right row col acc init_color board = 
+  if row < 7 && col < 7 then 
+    if get_piece board.(row + 1).(col + 1) = Empty then 
+      diagonal_down_right (row + 1) (col + 1) ((row,col) :: acc) init_color board
+    else if get_color board.(row + 1).(col + 1) <> init_color then
+      (row,col) :: (row + 1, col + 1) :: acc
+    else 
+      (row,col) :: acc
+  else (row,col) :: acc
+
+let rec diagonal_down_left row col acc init_color board = 
+    if row < 7 && col > 0 then 
+      if get_piece board.(row + 1).(col - 1) = Empty then 
+        diagonal_down_left (row + 1) (col - 1) ((row,col) :: acc) init_color board
+      else if get_color board.(row + 1).(col - 1) <> init_color then
+        (row,col) :: (row + 1, col - 1) :: acc
+      else 
+        (row,col) :: acc
     else (row,col) :: acc
 
-(** Important Big Boi *)
-let diagonal cord =
+(* Uses the helper methods in order to consolidate all of the diagonal 
+positions given a certain piece *)
+let diagonal cord init_color board =
   let row = fst cord in 
   let col = snd cord in
-  diagonal_down_left row col [] true @ 
-  diagonal_up_right row col [] true @ 
-  diagonal_up_left row col [] true @ 
-  diagonal_down_right row col [] true
+  let lst = 
+    diagonal_down_left row col [] init_color board @ 
+    diagonal_up_right row col [] init_color board @ 
+    diagonal_up_left row col [] init_color board @ 
+    diagonal_down_right row col [] init_color board in 
+    List.filter (fun (x,y) -> x <> fst cord || y <> snd cord) lst
 
-let horiz_vert_posib cord = 
+(* Uses the helper methods in order to find all of the possible horizontal and 
+vertical moves that a piece can do.*)
+let horiz_vert_posib cord init_color board= 
   let row = fst cord in 
   let col = snd cord in
-  let pos = row*8+col in 
-  horz pos row (row * 8) (row * 8 + 7) [] @
-  vert pos col col (col + 56) []
+  let lst = 
+    check_left_horz row col [] init_color board @ 
+    check_right_horz row col [] init_color board @ 
+    check_up_vert row col [] init_color board @ 
+    check_down_vert row col [] init_color board
+    in
+    List.filter (fun (x,y) -> x <> fst cord || y <> snd cord) lst
 
-let king_move cord = 
+
+
+(* Checks all of the places that the king can move to *)
+let valid_features x y init_color board = 
+  x >= 0 && x <= 7 && y >= 0 && y <= 7 && get_color board.(x).(y) <> init_color
+
+(* Updated so that if the piece is of the same color it cant move there. *)
+let king_move cord init_color board = 
   let row = fst cord in 
   let col = snd cord in
   let lst = [(row-1,col-1);(row-1,col);(row-1,col+1);(row, col-1);
   (row, col+1); (row+1,col-1);(row+1,col); (row+1,col+1)] in 
-  List.filter (fun (x,y) -> x >= 0 && x <= 7 && y >= 0 && y <= 7) lst
+  List.filter (fun (x,y) -> valid_features x y init_color board) lst
 
-let possible_moves p cord = 
-  match get_piece p with 
-  | King ->  king_move cord
-  | Queen -> horiz_vert_posib cord @ diagonal cord
-  | Bishop -> diagonal cord
-  | Rook -> horiz_vert_posib cord
-  | _ -> []
+let knight_moves cord init_color board =   
+  let row = fst cord in 
+  let col = snd cord in
+  let lst = [(row+2,col-1);(row+2,col+1);(row-2,col+1);(row-2,col-1);
+  (row+1, col+2); (row-1,col+2);(row+1,col-2); (row-1,col-2)] in 
+  List.filter (fun (x,y) -> valid_features x y init_color board) lst
+
+let pawn_moves cord color board = failwith ("unimplemented")
+
+(* Given a coordinate, it matches the piece type with the moves that the piece
+is able to do, and returns the possible moves. *)
+let possible_moves tile board = 
+  let cord = get_position tile in
+  let color = get_color board.(fst cord).(snd cord) in
+  match get_piece tile with 
+  | King ->  king_move cord color board
+  | Queen -> horiz_vert_posib cord color board @ diagonal cord color board
+  | Bishop -> diagonal cord color board
+  | Rook -> horiz_vert_posib cord color board
+  | Knight -> knight_moves cord color board
+  | Pawn -> []
+  | Empty -> []
 
 let starterboard = 
   "r,n,b,k,q,b,n,r/p,p,p,p,p,p,p,p/ , , , , , , , / , , , , , , , / , , , , , , , / , , , , , , , /P,P,P,P,P,P,P,P/R,N,B,K,Q,B,N,R"
