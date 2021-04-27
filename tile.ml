@@ -7,7 +7,17 @@ type tile = {
   position : int*int;
 }
 
+
 let get_piece (t:tile) = t.piece
+
+let print_piece t = match t with
+|Pawn -> print_string "Pawn"
+|Knight -> print_string "Knight"
+|Rook -> print_string "Rook"
+|Bishop -> print_string "Bishop"
+|Queen -> print_string "Queen"
+|King -> print_string "King"
+|Empty -> print_string "Empty"
 
 let get_color (t:tile) = t.color
 

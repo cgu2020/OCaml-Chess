@@ -4,7 +4,7 @@ exception InvalidMove
 
 (** [possible_moves a] is a set-like list of all the tiles 
     that a can move to.*)
-val possible_moves : Tile.tile -> int*int -> board -> (int * int) list
+val possible_moves : int -> int -> board -> (int * int) list
 
 (** [check_validity a b] is a boolean of whether moving tile a
     to tile b is a valid move*)
@@ -17,7 +17,6 @@ val starterboard : string
 val initialize : board -> string list list -> int -> unit
 
 val init : board
-
 
 val check_validity :  board -> int -> int -> int-> int -> int -> bool
 
