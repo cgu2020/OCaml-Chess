@@ -168,10 +168,10 @@ let knight_moves row col init_color board =
 let rec remove_pawn_blocked row col board lst = 
   match lst with
   |[] -> []
-  |h :: t -> if (List.mem (row - 2, col) lst && not (get_color board.(row - 2).(col) = None))
-    || (List.mem (row-1, col) lst && not (get_color board.(row - 1).(col) = None))
-    || (List.mem (row+1, col) lst && not (get_color board.(row + 1).(col) = None))
-    || (List.mem (row+2, col) lst && not (get_color board.(row + 2).(col) = None))
+  |h :: t -> if (h = (row-2, col) && not (get_color board.(row - 2).(col) = None)  )
+    || (h = (row - 1, col) && not (get_color board.(row - 1).(col) = None) )
+    || (h = (row + 1, col) && not (get_color board.(row + 1).(col) = None)  )
+    || (h = (row + 2 , col) && not (get_color board.(row + 2).(col) = None) )
     then remove_pawn_blocked row col board t else h :: remove_pawn_blocked row col board t
 
 let pawn_moves row col board = 
