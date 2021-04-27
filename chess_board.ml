@@ -164,12 +164,22 @@ let knight_moves row col init_color board =
  let white_pawn_attacks row col board =
   if col = 0 then white_left_col row col board
   else if col = 7 then white_right_col row col board else white_middle_col row col board
+
+let rec remove_pawn_blocked row col board lst = 
+  match lst with
+  |[] -> []
+  |h :: t -> if (List.mem (row - 2, col) lst && not (get_color board.(row - 2).(col) = None))
+    || (List.mem (row-1, col) lst && not (get_color board.(row - 1).(col) = None))
+    || (List.mem (row+1, col) lst && not (get_color board.(row + 1).(col) = None))
+    || (List.mem (row+2, col) lst && not (get_color board.(row + 2).(col) = None))
+    then remove_pawn_blocked row col board t else h :: remove_pawn_blocked row col board t
+
 let pawn_moves row col board = 
   let color = get_color board.(row).(col) in
-  if color = White && row = 6 then List.append [(row-1, col); (row - 2, col)] (white_pawn_attacks row col board)
-  else if color = Black && row = 1 then  List.append [(row+1, col); (row +2, col)] (black_pawn_attacks row col board)
-  else if color = White then List.append [(row - 1, col)] (white_pawn_attacks row col board)
-  else List.append [(row+1, col)] (black_pawn_attacks row col board)
+  if color = White && row = 6 then List.append [(row-1, col); (row - 2, col)] (white_pawn_attacks row col board) |> remove_pawn_blocked row col board 
+  else if color = Black && row = 1 then  List.append [(row+1, col); (row +2, col)] (black_pawn_attacks row col board)|> remove_pawn_blocked row col board 
+  else if color = White then List.append [(row - 1, col)] (white_pawn_attacks row col board)|> remove_pawn_blocked row col board 
+  else List.append [(row+1, col)] (black_pawn_attacks row col board)|> remove_pawn_blocked row col board 
  
 
 (* Given a coordinate, it matches the piece type with the moves that the piece
