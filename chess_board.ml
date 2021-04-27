@@ -311,13 +311,8 @@ let check_validity
 
 (*We call check_validity in main so we assume this move_piece takes
   valid positions*)
-let move_piece
-    (b : board)
-    (x : int)
-    (y : int)
-    (x2 : int)
-    (y2 : int)
-    (c : int) : unit =
+let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) :
+    unit =
   let piece1 = b.(x).(y) in
   b.(x2).(y2) <- piece1;
   b.(x).(y) <- empty_tile
