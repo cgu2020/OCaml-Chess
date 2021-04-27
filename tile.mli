@@ -4,6 +4,8 @@ type c = None | White | Black
 
 val point_value : tile -> int
 
+val print_piece : p -> unit
+
 val get_piece : tile -> p
 
 val get_color : tile -> c
