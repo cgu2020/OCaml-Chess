@@ -27,15 +27,28 @@ let char_to_int c =
   |'h' -> 7
   | _ -> failwith "impossible"
 
-let string_piece tile =
+let black_pieces tile=
   match get_piece tile with
-  |Pawn -> "p"
-  |Rook -> "r"
-  |Knight -> "n"
-  |Bishop -> "b"
-  |King -> "k"
-  |Queen -> "q"
+  |Pawn -> "♙"
+  |Rook -> "♖"
+  |Knight -> "♘"
+  |Bishop -> "♗"
+  |King -> "♔"
+  |Queen -> "♕"
   |Empty -> ","
+
+  let white_pieces tile=
+  match get_piece tile with
+  |Pawn -> "♟︎"
+  |Rook -> "♜"
+  |Knight -> "♞"
+  |Bishop -> "♝"
+  |King -> "♚"
+  |Queen -> "♛"
+  |Empty -> ","
+
+let string_piece tile =
+  if get_color tile = White then white_pieces tile else black_pieces tile
 
 let rec print_row x y b: unit = match y with 
 | 8 -> print_string "\n"

@@ -210,7 +210,7 @@ let rec print_pairs lst =
 
 let check_validity (b : board) (x : int) (y : int) (x2 : int) (y2 : int) (c :int ) : bool = 
   let snd_tile = (x2,y2) in
-  let () = print_piece (get_piece b.(x).(y)); print_string "\n" in
+  let () = print_piece (get_piece b.(x).(y)); print_string "\n"; print_string "♜,♞,♝,♚,♛,♝,♞,♜/♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎/ , , , , , , , / , , , , , , , / , , , , , , , / , , , , , , , /♙,♙,♙,♙,♙,♙,♙,♙/♖,♘,♗,♔,♕,♗,♘,♖\n"; in
   print_string "Initial coord: "; print_int x; print_string ","; print_int y; print_string "\n";
   print_string "Possible tiles: "; print_pairs (possible_moves x y b);
   (not(get_piece b.(x).(y) = Empty)) &&
