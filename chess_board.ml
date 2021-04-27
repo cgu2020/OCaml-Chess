@@ -120,9 +120,9 @@ let king_move row col init_color board =
   List.filter (fun (x,y) -> valid_features x y init_color board) lst
 
 let print_coor x y =
-  print_int x; print_string ","; print_int y; print_string "THIS IS FROM KNIGHT_MOVES\n"
+  print_int x; print_string ","; print_int y
 let knight_moves row col init_color board =  
-  print_coor row col;
+  (*print_coor row col;*)
   let lst = [(row+2,col-1);(row+2,col+1);(row-2,col+1);(row-2,col-1);
   (row+1, col+2); (row-1,col+2);(row+1,col-2); (row-1,col-2)] in
   List.filter (fun (x,y) -> valid_features x y init_color board) lst
@@ -210,9 +210,9 @@ let rec print_pairs lst =
 
 let check_validity (b : board) (x : int) (y : int) (x2 : int) (y2 : int) (c :int ) : bool = 
   let snd_tile = (x2,y2) in
-  let () = print_piece (get_piece b.(x).(y)); print_string "\n"; print_string "♜,♞,♝,♚,♛,♝,♞,♜/♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎/ , , , , , , , / , , , , , , , / , , , , , , , / , , , , , , , /♙,♙,♙,♙,♙,♙,♙,♙/♖,♘,♗,♔,♕,♗,♘,♖\n"; in
+  (*let () = print_piece (get_piece b.(x).(y)); print_string "\n"; print_string "♜,♞,♝,♚,♛,♝,♞,♜/♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎/ , , , , , , , / , , , , , , , / , , , , , , , / , , , , , , , /♙,♙,♙,♙,♙,♙,♙,♙/♖,♘,♗,♔,♕,♗,♘,♖\n"; in
   print_string "Initial coord: "; print_int x; print_string ","; print_int y; print_string "\n";
-  print_string "Possible tiles: "; print_pairs (possible_moves x y b);
+  print_string "Possible tiles: "; print_pairs (possible_moves x y b);*)
   (not(get_piece b.(x).(y) = Empty)) &&
    ((get_color b.(x).(y) = Black && c mod 2 = 1)||(get_color b.(x).(y) = White && c mod 2 = 0)) && 
    List.mem snd_tile (possible_moves x y b)

@@ -35,7 +35,7 @@ let black_pieces tile=
   |Bishop -> "♗"
   |King -> "♔"
   |Queen -> "♕"
-  |Empty -> ","
+  |Empty -> "-"
 
   let white_pieces tile=
   match get_piece tile with
@@ -45,7 +45,7 @@ let black_pieces tile=
   |Bishop -> "♝"
   |King -> "♚"
   |Queen -> "♛"
-  |Empty -> ","
+  |Empty -> "-"
 
 let string_piece tile =
   if get_color tile = White then white_pieces tile else black_pieces tile
@@ -57,9 +57,9 @@ let rec print_row x y b: unit = match y with
 let rec print_board x b: unit =
   match x with
   | 8 -> ()
-  | x -> print_row x 0 b; print_board (x+1) b
+  | x -> print_int (8 - x); print_string "   "; print_row x 0 b; print_board (x+1) b
 
-let print b= print_board 0 b
+let print b= print_board 0 b; print_string "\n    a  b  c  d  e  f  g  h\n\n"
 
 let check_valid_move str = match parse str with
 |Move x -> true
@@ -75,7 +75,7 @@ let rec get_coords lst = match lst with
 | h:: t -> (get_int (String.get h 1)) :: (char_to_int (String.get h 0)) :: (get_coords t)
 | [] -> []
 
-let rec play_game b c = print b; let () = print_string "Enter two valid positions (e.g. a2 a4)" 
+let rec play_game b c = let o = Sys.command "clear" in print b; let () = print_string "Enter two valid positions (e.g. a2 a4)" 
   in let i = read_line () in 
   if check_valid_move i 
     then let lst = get_coords (get_lst i) in 
