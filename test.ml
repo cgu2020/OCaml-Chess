@@ -29,10 +29,6 @@ let get_color_test name row col expected_output : test =
   name >:: fun _ ->
   assert_equal expected_output (get_color b.(row).(col))
 
-let get_position_test name row col expected_output : test =
-  name >:: fun _ ->
-  assert_equal expected_output (get_position b.(row).(col))
-
 let point_value_test name row col expected_output : test =
   name >:: fun _ ->
   assert_equal expected_output (point_value b.(row).(col))
@@ -42,6 +38,11 @@ let posib_moves_test name row col expected_output : test =
   assert_equal expected_output
     (possible_moves row col b)
     ~cmp:cmp_set_like_lists
+
+let check_tiles_test name row col row2 col2 b expected_output : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    [ get_piece b.(row).(col); get_piece b.(row2).(col2) ]
 
 (*let move_piece_test name x y x2 y2 expected_output : test = name >::
   fun _ -> let t = move_piece b 1 0 2 0 in assert_equal expected_output
@@ -58,7 +59,6 @@ let tile_tests =
     get_color_test "White Piece Color Check" 0 5 Black;
     get_color_test "Black Piece Color Check" 6 6 White;
     get_color_test "No Piece Color Check" 3 0 None;
-    get_position_test "(3,3) check" 3 3 (3, 3);
     point_value_test "Rook Value" 0 0 5;
     point_value_test "Empty Value" 3 0 0;
   ]
@@ -82,18 +82,22 @@ let posib_moves_tests =
     posib_moves_test "Black Queen with Diagonal/Vert" 0 4
       [ (1, 4); (1, 5); (2, 6); (3, 7) ];
     posib_moves_test "White King Moves" 7 3 [ (6, 2); (6, 3) ];
-    posib_moves_test "White Knight in the Middle of Board" 5 5
+    posib_moves_test "White Knight in the Middle\n      of Board" 5 5
       [ (4, 7); (3, 6); (4, 3); (3, 4); (7, 6); (6, 3) ];
     posib_moves_test "White Bishop Attacking Black Pawn" 7 2
       [ (6, 3); (5, 4); (4, 5); (3, 6) ];
-    posib_moves_test "(1,3) Black Pawn initial move with Blocker" 1 3
-      [ (2, 3) ];
-    posib_moves_test "(2,4) Black Pawn with Capture" 2 4
+    posib_moves_test "(1,3) Black Pawn\n      initial move with Blocker"
+      1 3 [ (2, 3) ];
+    posib_moves_test "(2,4)\n      Black Pawn with Capture" 2 4
       [ (3, 3); (3, 4) ];
     posib_moves_test "(6,6) White Pawn Initial State with Capture" 6 6
       [ (5, 6); (4, 6); (5, 7) ];
     posib_moves_test "(5,7) White Pawn Blocked off" 5 7 [ (6, 6) ];
     posib_moves_test "(2,1) Normal Black Pawn Move" 2 1 [ (3, 1) ];
+    check_tiles_test "6 0 and 5 0 Tiles with pawn up" 6 0 5 0
+      (let () = move_piece b 6 0 5 0 in
+       b)
+      [ Empty; Pawn ];
   ]
 
 let suite =
