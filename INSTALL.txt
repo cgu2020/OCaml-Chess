@@ -3,3 +3,5 @@ make build
 
 To run our project, run
 make play
+
+To leave the game, control c in terminal
