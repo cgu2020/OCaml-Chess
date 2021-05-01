@@ -1,3 +1,4 @@
+
 open Js_of_ocaml
 
 type p = Empty | Rook | Bishop | Knight | Pawn | Queen | King
@@ -7,15 +8,23 @@ type img = Image of Dom_html.imageElement Js.t | No
 type tile = {
   piece : p;
   color : c;
-  position : int*int;
   mutable image: img;
 }
 
-let get_piece (t:tile) = t.piece
+let get_piece (t : tile) = t.piece
 
-let get_color (t:tile) = t.color
+let print_piece t =
+  match t with
+  | Pawn -> print_string "Pawn"
+  | Knight -> print_string "Knight"
+  | Rook -> print_string "Rook"
+  | Bishop -> print_string "Bishop"
+  | Queen -> print_string "Queen"
+  | King -> print_string "King"
+  | Empty -> print_string "Empty"
 
-let get_position (t:tile) = t.position
+let get_color (t : tile) = t.color
+
 
 let get_img t= t.image
 
@@ -47,10 +56,12 @@ let point_value (t:tile) : int =
   position = (0,0);
   image = Image(img "./images/WhitePawn.png")
 }
-let check_capital (s:string) : bool = if String.equal (String.uppercase_ascii s) s then true else false
+let check_capital (s:string) : bool = String.equal (String.uppercase_ascii s) s
 
-let parse_piece (s: string) (r:int) (c:int) : tile = 
-  let piece = match String.lowercase_ascii s with 
+
+let parse_piece (s : string) (r : int) (c : int) : tile =
+  let piece =
+    match String.lowercase_ascii s with
     | "r" -> Rook
     | "n" -> Knight
     | "b" -> Bishop
@@ -77,6 +88,6 @@ let parse_piece (s: string) (r:int) (c:int) : tile =
   {
     piece = piece;
     color = color;
-    position = (r, c);
     image = i
   }
+
