@@ -1,5 +1,6 @@
 MODULES=chess_board command game_logic tile main
 OBJECTS=$(MODULES:=.cmo)
+
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 TEST=test.byte
@@ -11,6 +12,9 @@ default: build
 
 build:
 	$(OCAMLBUILD) $(OBJECTS) 
+
+js:
+	dune build --profile release ./draw.bc.js
 
 test:
 	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential

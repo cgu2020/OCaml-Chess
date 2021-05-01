@@ -76,4 +76,5 @@ let main () =
   initialize b (string_to_lists starterboard) 0;
   play_game b 0
 
+
 let () = main()
