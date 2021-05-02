@@ -1,4 +1,8 @@
-To build the system, run 
+Install js_of_ocaml by running
+opam install js_of_ocaml js_of_ocaml-ppx js_of_ocaml-lwt
+
+To build the system, run
+
 make js
 
 To run our project, run
