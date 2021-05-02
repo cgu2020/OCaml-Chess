@@ -1,5 +1,5 @@
 To build the system, run 
-make build
+make js
 
 To run our project, run
-make play
+open index.html
