@@ -1,6 +1,8 @@
 (** The abstract type that represents a chessboard. *)
 type board = Tile.tile array array
 
+type scoreboard
+
 exception InvalidMove
 
 (** [possible_moves a] is a set-like list of all the tiles that a can
@@ -21,6 +23,14 @@ val initialize : board -> string list list -> int -> unit
 val init : board
 
 val check_validity : board -> int -> int -> int -> int -> int -> bool
+
+val get_white_score : int
+
+val get_black_score : int
+
+val get_captured_white : Tile.p list
+
+val get_captured_black : Tile.p list
 
 (** [move_piece b x1 y1 x2 y2 c] clears tile (x1,y1) and replaces tile
     (x2,y2) with tile (x1, y1). Invalid move if the int c does not match

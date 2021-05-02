@@ -7,9 +7,14 @@ let test_board =
   "r,n,b,k,q,b,n,r/p, ,p,p, , , , / ,p, , ,p,p, , / , , ,R, , ,p, / , \
    , , , , , , / , ,P,P, ,N, ,p/P,P, , ,P,P,P,P/ ,N,B,K,Q,B, ,R"
 
+let board2 =
+  "r, ,b,k,q,b,n,r/p,p,p, ,p,p,p,p / , ,n, , , , , / , , ,p, , , , / , \
+   , , ,P, , , / , , , , , , , /P,P,P,P, ,P,P,P/R,N,B,K,Q,B,N,R"
+
 (* 0 r n b k q b n r 1 p - p p - - - - 2 - p - - p p - - 3 - - - R - - p
    - 4 - - - - - - - - 5 - - P P - N - p 6 P P - - P P P P 7 - N B K Q B
    - R 0 1 2 3 4 5 6 7 *)
+
 let b = init
 
 let c = initialize b (string_to_lists test_board) 0
@@ -38,6 +43,15 @@ let posib_moves_test name row col expected_output : test =
   assert_equal expected_output
     (possible_moves row col b)
     ~cmp:cmp_set_like_lists
+
+let white_score_test name b x y x2 y2 expected_output : test =
+  name >:: fun _ ->
+  let filler = check_validity b x y x2 y2 0 in
+  move_piece b x y x2 y2;
+  assert_equal expected_output get_white_score
+
+let black_score_test name expected_output : test =
+  name >:: fun _ -> assert_equal expected_output get_black_score
 
 let check_tiles_test name row col row2 col2 b expected_output : test =
   name >:: fun _ ->
