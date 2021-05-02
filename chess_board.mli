@@ -1,6 +1,8 @@
 (** The abstract type that represents a chessboard. *)
 type board = Tile.tile array array
 
+type scoreboard
+
 exception InvalidMove
 
 (** [possible_moves a] is a set-like list of all the tiles that a can
