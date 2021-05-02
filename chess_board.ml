@@ -12,7 +12,17 @@ type c =
 type scoreboard = {
   mutable white_score : int;
   mutable black_score : int;
+  mutable white_captured : Tile.p list;
+  mutable black_captured : Tile.p list;
 }
+
+let s =
+  {
+    white_score = 0;
+    black_score = 0;
+    white_captured = [];
+    black_captured = [];
+  }
 
 (* The next 4 functions are helpers for checking the vertical and
    horizontal possible moves.*)
@@ -303,16 +313,38 @@ let check_validity
     (y2 : int)
     (c : int) : bool =
   let snd_tile = (x2, y2) in
-  (*let () = print_piece (get_piece b.(x).(y)); print_string "\n";
-    print_string "♜,♞,♝,♚,♛,♝,♞,♜/♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎/ , , , , , , , / , , ,
-    , , , , / , , , , , , , / , , , , , , ,
-    /♙,♙,♙,♙,♙,♙,♙,♙/♖,♘,♗,♔,♕,♗,♘,♖\n"; in print_string "Initial coord:
-    "; print_int x; print_string ","; print_int y; print_string "\n";
-    print_string "Possible tiles: "; print_pairs (possible_moves x y b);*)
-  (not (get_piece b.(x).(y) = Empty))
-  && ((get_color b.(x).(y) = Black && c mod 2 = 1)
-     || (get_color b.(x).(y) = White && c mod 2 = 0))
-  && List.mem snd_tile (possible_moves x y b)
+  let bo =
+    (*let () = print_piece (get_piece b.(x).(y)); print_string "\n";
+      print_string "♜,♞,♝,♚,♛,♝,♞,♜/♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎,♟︎/ , , , , , , , / , ,
+      , , , , , / , , , , , , , / , , , , , , ,
+      /♙,♙,♙,♙,♙,♙,♙,♙/♖,♘,♗,♔,♕,♗,♘,♖\n"; in print_string "Initial
+      coord: "; print_int x; print_string ","; print_int y; print_string
+      "\n"; print_string "Possible tiles: "; print_pairs (possible_moves
+      x y b);*)
+    (not (get_piece b.(x).(y) = Empty))
+    && ((get_color b.(x).(y) = Black && c mod 2 = 1)
+       || (get_color b.(x).(y) = White && c mod 2 = 0))
+    && List.mem snd_tile (possible_moves x y b)
+  in
+  if bo then
+    if get_color b.(x2).(y2) = White then (
+      s.black_score <- s.black_score + point_value b.(x2).(y2);
+      s.white_captured <- s.white_captured @ [ get_piece b.(x2).(y2) ];
+      true)
+    else if get_color b.(x2).(y2) = Black then (
+      s.white_score <- s.white_score + point_value b.(x2).(y2);
+      s.black_captured <- s.black_captured @ [ get_piece b.(x2).(y2) ];
+      true)
+    else true
+  else false
+
+let get_white_score = s.white_score
+
+let get_black_score = s.black_score
+
+let get_captured_black = s.black_captured
+
+let get_captured_white = s.white_captured
 
 (*We call check_validity in main so we assume this move_piece takes
   valid positions*)
