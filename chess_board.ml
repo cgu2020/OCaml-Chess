@@ -16,6 +16,20 @@ type scoreboard = {
   mutable black_captured : Tile.p list;
 }
 
+type kings = {
+  mutable white_king : int * int;
+  mutable black_king : int * int;
+}
+
+type attacked_positions = {
+  mutable white : (int * int) list;
+  mutable black : (int * int) list;
+}
+
+let k = { white_king = (7, 3); black_king = (0, 3) }
+
+let attacking_pos = { white = []; black = [] }
+
 let s =
   {
     white_score = 0;
@@ -222,6 +236,7 @@ let white_pawn_attacks row col board =
   else if col = 7 then white_right_col row col board
   else white_middle_col row col board
 
+(*Removes the positions where a pawn is blocked by another piece*)
 let rec remove_pawn_blocked row col board lst =
   match lst with
   | [] -> []
@@ -257,6 +272,35 @@ let pawn_moves row col board =
     List.append [ (row + 1, col) ] (black_pawn_attacks row col board)
     |> remove_pawn_blocked row col board
 
+let white_left_col row col board = [ (row - 1, col + 1) ]
+
+let white_right_col row col board = [ (row - 1, col - 1) ]
+
+let white_middle_col row col board =
+  [ (row - 1, col + 1); (row - 1, col - 1) ]
+
+let white_pawn_attacking_squares row col board =
+  if col = 0 then white_left_col row col board
+  else if col = 7 then white_right_col row col board
+  else white_middle_col row col board
+
+let black_left_col row col board = [ (row + 1, col + 1) ]
+
+let black_right_col row col board = [ (row + 1, col - 1) ]
+
+let black_middle_col row col board =
+  [ (row + 1, col + 1); (row + 1, col - 1) ]
+
+let black_pawn_attacking_squares row col board =
+  if col = 0 then black_left_col row col board
+  else if col = 7 then black_right_col row col board
+  else black_middle_col row col board
+
+let pawn_attacking_moves row col b =
+  let color = get_color b.(row).(col) in
+  if color = Tile.White then white_pawn_attacking_squares row col b
+  else black_pawn_attacking_squares row col b
+
 (* Given a coordinate, it matches the piece type with the moves that the
    piece is able to do, and returns the possible moves. *)
 let possible_moves x y board =
@@ -268,6 +312,17 @@ let possible_moves x y board =
   | Rook -> horiz_vert_posib x y color board
   | Knight -> knight_moves x y color board
   | Pawn -> pawn_moves x y board
+  | Empty -> []
+
+let attacking_moves x y board =
+  let color = get_color board.(x).(y) in
+  match get_piece board.(x).(y) with
+  | King -> king_move x y color board
+  | Queen -> horiz_vert_posib x y color board @ diagonal x y color board
+  | Bishop -> diagonal x y color board
+  | Rook -> horiz_vert_posib x y color board
+  | Knight -> knight_moves x y color board
+  | Pawn -> pawn_attacking_moves x y board
   | Empty -> []
 
 let starterboard =
@@ -305,6 +360,53 @@ let rec print_pairs lst =
       print_string "\n";
       print_pairs t
 
+let rec update_attackers_row r c b wlst blst =
+  match c with
+  | 8 -> (wlst, blst)
+  | y ->
+      if get_color b.(r).(c) = White then
+        update_attackers_row r (c + 1) b
+          (wlst @ attacking_moves r c b)
+          blst
+      else if get_color b.(r).(c) = Black then
+        update_attackers_row r (c + 1) b wlst
+          (blst @ attacking_moves r c b)
+      else update_attackers_row r (c + 1) b wlst blst
+
+let rec update_attackers r b wlst blst =
+  match r with
+  | 8 -> (wlst, blst)
+  | x ->
+      let tup = update_attackers_row x 0 b [] [] in
+      update_attackers (r + 1) b (wlst @ fst tup) (blst @ snd tup)
+
+(*Precondition: c is the color of the king*)
+let king_attacked x2 y2 c =
+  match c with
+  | Tile.White -> List.mem (x2, y2) attacking_pos.black
+  | Tile.Black -> List.mem (x2, y2) attacking_pos.white
+  | _ -> failwith "impossible"
+
+let moving_in_check b x y x2 y2 c : bool =
+  if get_piece b.(x).(y) = King then king_attacked x2 y2 c else false
+
+let in_check c =
+  match c with
+  | Tile.White -> List.mem k.white_king attacking_pos.black
+  | Tile.Black -> List.mem k.black_king attacking_pos.white
+  | _ -> failwith "impossible"
+
+let counter_check x y x2 y2 b c =
+  match get_piece b.(x).(y) with
+  | King -> (
+      match c with
+      | Tile.White -> not (List.mem (x2, y2) attacking_pos.black)
+      | Tile.Black -> not (List.mem (x2, y2) attacking_pos.white)
+      | _ -> failwith "impossible")
+  | _ -> false
+
+(* "need to implement this part if the moving piece isnt the king"*)
+
 let check_validity
     (b : board)
     (x : int)
@@ -325,6 +427,12 @@ let check_validity
     && ((get_color b.(x).(y) = Black && c mod 2 = 1)
        || (get_color b.(x).(y) = White && c mod 2 = 0))
     && List.mem snd_tile (possible_moves x y b)
+    && (if in_check (get_color b.(x).(y)) then
+        counter_check x y x2 y2 b (get_color b.(x).(y))
+       else true)
+    && not (moving_in_check b x y x2 y2 (get_color b.(x).(y)))
+    (*if get_color b.(x).(y) = White then not_moving_in_check b x y x2
+      y2 White else not_moving_in_check b x y x2 y2 Black*)
   in
   if bo then
     if get_color b.(x2).(y2) = White then (
@@ -346,10 +454,36 @@ let get_captured_black = s.black_captured
 
 let get_captured_white = s.white_captured
 
+let rec is_checkmate klst alst =
+  match klst with
+  | h :: t -> List.mem h alst && is_checkmate t alst
+  | [] -> true
+
+let c_mates c b =
+  match c with
+  | Tile.Black ->
+      let kings_moves =
+        possible_moves (fst k.white_king) (snd k.white_king) b
+      in
+      in_check c && is_checkmate kings_moves attacking_pos.black
+  | Tile.White ->
+      let kings_moves =
+        possible_moves (fst k.black_king) (snd k.black_king) b
+      in
+      in_check c && is_checkmate kings_moves attacking_pos.white
+  | _ -> failwith "impossible"
+
 (*We call check_validity in main so we assume this move_piece takes
   valid positions*)
 let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) :
     unit =
+  if get_piece b.(x).(y) = King then
+    if get_color b.(x).(y) = White then k.white_king <- (x2, y2)
+    else k.black_king <- (x2, y2)
+  else ();
   let piece1 = b.(x).(y) in
   b.(x2).(y2) <- piece1;
-  b.(x).(y) <- empty_tile
+  b.(x).(y) <- empty_tile;
+  let attacks = update_attackers 0 b [] [] in
+  attacking_pos.white <- fst attacks;
+  attacking_pos.black <- snd attacks
