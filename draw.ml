@@ -123,10 +123,12 @@ let check b x y x2 y2 c =
   if
     check_validity b (get_coor sel1.y) (get_coor sel1.x)
       (get_coor sel2.y) (get_coor sel2.x) c
-  then (
-    move_piece b (get_coor sel1.y) (get_coor sel1.x) (get_coor sel2.y)
-      (get_coor sel2.x);
-    counter := !counter + 1)
+  then
+    let a =
+      move_piece b (get_coor sel1.y) (get_coor sel1.x) (get_coor sel2.y)
+        (get_coor sel2.x)
+    in
+    if a then counter := !counter + 1 else ()
   else ()
 
 let rec update_loop (c : Dom_html.canvasElement Js.t) : unit =
