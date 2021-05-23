@@ -374,7 +374,9 @@ let rw_rook_castle_condit board =
   && r.white_right_rook_moved = false
   && get_piece board.(7).(4) = Empty
   && get_piece board.(7).(5) = Empty
-  && not (List.mem (7, 4) attacking_pos.black)
+  && (not (List.mem (7, 4) attacking_pos.black))
+  && (not (List.mem (7, 3) attacking_pos.black))
+  && not (List.mem (7, 5) attacking_pos.black)
 
 (* Checks whether black king is able to castle left. *)
 let lb_rook_castle_condit board =
@@ -382,7 +384,9 @@ let lb_rook_castle_condit board =
   && r.black_left_rook_moved = false
   && get_piece board.(0).(1) = Empty
   && get_piece board.(0).(2) = Empty
-  && not (List.mem (0, 2) attacking_pos.white)
+  && (not (List.mem (0, 2) attacking_pos.white))
+  && (not (List.mem (0, 1) attacking_pos.white))
+  && not (List.mem (0, 3) attacking_pos.white)
 
 (* Checks whether black king is able to castle right. *)
 let rb_rook_castle_condit board =
@@ -390,7 +394,9 @@ let rb_rook_castle_condit board =
   && r.black_right_rook_moved = false
   && get_piece board.(0).(4) = Empty
   && get_piece board.(0).(5) = Empty
-  && not (List.mem (0, 4) attacking_pos.white)
+  && (not (List.mem (0, 4) attacking_pos.white))
+  && (not (List.mem (0, 3) attacking_pos.white))
+  && not (List.mem (0, 5) attacking_pos.white)
 
 (* Adds the "castle" moves to the kings possible moves. Adds the moves
    in if the conditions are met. *)
