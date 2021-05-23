@@ -15,7 +15,7 @@ type c =
   | Black
 
 type img =
-  | Image of Dom_html.imageElement Js.t
+  | Image of string
   | No
 
 type tile = {
@@ -50,18 +50,13 @@ let point_value (t : tile) : int =
   | Queen -> 9
   | King -> 0
 
-let img src =
-  let i = Dom_html.createImg Dom_html.document in
-  i##.src := Js.string src;
-  i
-
 let empty_tile = { piece = Empty; color = None; image = No }
 
 let pawn =
   {
     piece = Pawn;
     color = White;
-    image = Image (img "./images/WhitePawn.png");
+    image = Image "./images/WhitePawn.png";
   }
 
 let check_capital (s : string) : bool =
@@ -85,18 +80,18 @@ let parse_piece (s : string) (r : int) (c : int) : tile =
   in
   let i =
     match (piece, color) with
-    | Rook, White -> Image (img "./images/WhiteRook.png")
-    | Bishop, White -> Image (img "./images/WhiteBishop.png")
-    | Knight, White -> Image (img "./images/WhiteKnight.png")
-    | King, White -> Image (img "./images/WhiteKing.png")
-    | Queen, White -> Image (img "./images/WhiteQueen.png")
-    | Pawn, White -> Image (img "./images/WhitePawn.png")
-    | Rook, Black -> Image (img "./images/BlackRook.png")
-    | Bishop, Black -> Image (img "./images/BlackBishop.png")
-    | Knight, Black -> Image (img "./images/BlackKnight.png")
-    | King, Black -> Image (img "./images/BlackKing.png")
-    | Queen, Black -> Image (img "./images/BlackQueen.png")
-    | Pawn, Black -> Image (img "./images/BlackPawn.png")
+    | Rook, White -> Image "./images/WhiteRook.png"
+    | Bishop, White -> Image "./images/WhiteBishop.png"
+    | Knight, White -> Image "./images/WhiteKnight.png"
+    | King, White -> Image "./images/WhiteKing.png"
+    | Queen, White -> Image "./images/WhiteQueen.png"
+    | Pawn, White -> Image "./images/WhitePawn.png"
+    | Rook, Black -> Image "./images/BlackRook.png"
+    | Bishop, Black -> Image "./images/BlackBishop.png"
+    | Knight, Black -> Image "./images/BlackKnight.png"
+    | King, Black -> Image "./images/BlackKing.png"
+    | Queen, Black -> Image "./images/BlackQueen.png"
+    | Pawn, Black -> Image "./images/BlackPawn.png"
     | _, _ -> No
   in
   { piece; color; image = i }

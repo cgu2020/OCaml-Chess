@@ -13,11 +13,11 @@ default: build
 build:
 	$(OCAMLBUILD) $(OBJECTS) 
 
-js:
-	dune build --profile release ./draw.bc.js
-
 test:
 	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential
+
+js:
+	dune build --profile release ./draw.bc.js
 
 play:
 	$(OCAMLBUILD) -tag 'debug' $(MAIN) && OCAMLRUNPARAM=b ./$(MAIN)

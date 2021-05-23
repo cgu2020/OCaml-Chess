@@ -23,6 +23,11 @@ let b = init
 
 let () = initialize b (string_to_lists starterboard) 0
 
+let img src =
+  let i = Dom_html.createImg Dom_html.document in
+  i##.src := Js.string src;
+  i
+
 let clear_canvas (c : Dom_html.canvasElement Js.t) =
   let ctx = c##getContext Html._2d_ in
   ctx##clearRect 0.0 0.0
@@ -36,7 +41,7 @@ let draw_piece
     (b : board) =
   let ctx = c##getContext Html._2d_ in
   match get_img b.(int_of_float x).(int_of_float y) with
-  | Image a -> ctx##drawImage a (y *. 60.0) (x *. 60.0)
+  | Image a -> ctx##drawImage (img a) (y *. 60.0) (x *. 60.0)
   | No -> ()
 
 let rec draw_row_pieces
