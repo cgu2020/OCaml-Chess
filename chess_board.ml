@@ -309,7 +309,6 @@ let check_validity
      || (get_color b.(x).(y) = White && c mod 2 = 0))
   && List.mem snd_tile (possible_moves x y b)
 
-
 (*We call check_validity in main so we assume this move_piece takes
   valid positions*)
 let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) :
