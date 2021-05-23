@@ -615,11 +615,8 @@ let get_black_score = s.black_score
 
 let get_captured_black = s.black_captured
 
-<<<<<<< HEAD
-=======
 let get_captured_white = s.white_captured
 
->>>>>>> 81dbd3ee34ddd4ec403170fd396d2d8193177873
 (*We call check_validity in main so we assume this move_piece takes
   valid positions*)
 let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) :
