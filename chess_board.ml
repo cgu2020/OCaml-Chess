@@ -19,14 +19,52 @@ type scoreboard = {
 type kings = {
   mutable white_king : int * int;
   mutable black_king : int * int;
+  mutable white_king_moved : bool;
+  mutable black_king_moved : bool;
 }
+
+type queens = {
+  mutable white_queen : int * int;
+  mutable black_queen : int * int;
+}
+
+let q = { white_queen = (7, 4); black_queen = (0, 4) }
 
 type attacked_positions = {
   mutable white : (int * int) list;
   mutable black : (int * int) list;
 }
 
-let k = { white_king = (7, 3); black_king = (0, 3) }
+let k =
+  {
+    white_king = (7, 3);
+    black_king = (0, 3);
+    white_king_moved = false;
+    black_king_moved = false;
+  }
+
+type rook = {
+  mutable white_left_rook : int * int;
+  mutable white_right_rook : int * int;
+  mutable black_left_rook : int * int;
+  mutable black_right_rook : int * int;
+  mutable white_left_rook_moved : bool;
+  mutable white_right_rook_moved : bool;
+  mutable black_left_rook_moved : bool;
+  mutable black_right_rook_moved : bool;
+}
+
+let r =
+  {
+    white_left_rook = (7, 0);
+    white_right_rook = (7, 7);
+    black_left_rook = (0, 0);
+    black_right_rook = (0, 7);
+    white_left_rook_moved = false;
+    white_right_rook_moved = false;
+    black_left_rook_moved = false;
+    black_right_rook_moved = false;
+  }
 
 let attacking_pos = { white = []; black = [] }
 
@@ -279,6 +317,7 @@ let white_right_col row col board = [ (row - 1, col - 1) ]
 let white_middle_col row col board =
   [ (row - 1, col + 1); (row - 1, col - 1) ]
 
+(*Helper for pawn_attacking_moves*)
 let white_pawn_attacking_squares row col board =
   if col = 0 then white_left_col row col board
   else if col = 7 then white_right_col row col board
@@ -291,22 +330,80 @@ let black_right_col row col board = [ (row + 1, col - 1) ]
 let black_middle_col row col board =
   [ (row + 1, col + 1); (row + 1, col - 1) ]
 
+(*Helper for pawn_attacking_moves*)
 let black_pawn_attacking_squares row col board =
   if col = 0 then black_left_col row col board
   else if col = 7 then black_right_col row col board
   else black_middle_col row col board
 
+(*Returns a pawn's attacking moves*)
 let pawn_attacking_moves row col b =
   let color = get_color b.(row).(col) in
   if color = Tile.White then white_pawn_attacking_squares row col b
   else black_pawn_attacking_squares row col b
+
+let lw_rook_castle_condit board =
+  k.white_king_moved = false
+  && r.white_left_rook_moved = false
+  && get_piece board.(7).(1) = Empty
+  && get_piece board.(7).(2) = Empty
+  && (not (List.mem (7, 2) attacking_pos.black))
+  && (not (List.mem (7, 1) attacking_pos.black))
+  && not (List.mem (7, 3) attacking_pos.black)
+
+(* Checks whether white king is able to castle right. *)
+let rw_rook_castle_condit board =
+  k.white_king_moved = false
+  && r.white_right_rook_moved = false
+  && get_piece board.(7).(4) = Empty
+  && get_piece board.(7).(5) = Empty
+  && (not (List.mem (7, 4) attacking_pos.black))
+  && (not (List.mem (7, 3) attacking_pos.black))
+  && not (List.mem (7, 5) attacking_pos.black)
+
+(* Checks whether black king is able to castle left. *)
+let lb_rook_castle_condit board =
+  k.black_king_moved = false
+  && r.black_left_rook_moved = false
+  && get_piece board.(0).(1) = Empty
+  && get_piece board.(0).(2) = Empty
+  && (not (List.mem (0, 2) attacking_pos.white))
+  && (not (List.mem (0, 1) attacking_pos.white))
+  && not (List.mem (0, 3) attacking_pos.white)
+
+(* Checks whether black king is able to castle right. *)
+let rb_rook_castle_condit board =
+  k.black_king_moved = false
+  && r.black_right_rook_moved = false
+  && get_piece board.(0).(4) = Empty
+  && get_piece board.(0).(5) = Empty
+  && (not (List.mem (0, 4) attacking_pos.white))
+  && (not (List.mem (0, 3) attacking_pos.white))
+  && not (List.mem (0, 5) attacking_pos.white)
+
+(*It returns the castle squares the king can go to*)
+let castle x y board =
+  match get_color board.(x).(y) with
+  | White ->
+      if lw_rook_castle_condit board && rw_rook_castle_condit board then
+        [ (7, 1); (7, 5) ]
+      else if lw_rook_castle_condit board then [ (7, 1) ]
+      else if rw_rook_castle_condit board then [ (7, 5) ]
+      else []
+  | Black ->
+      if lb_rook_castle_condit board && rb_rook_castle_condit board then
+        [ (0, 1); (0, 5) ]
+      else if lb_rook_castle_condit board then [ (0, 1) ]
+      else if rb_rook_castle_condit board then [ (0, 5) ]
+      else []
+  | None -> []
 
 (* Given a coordinate, it matches the piece type with the moves that the
    piece is able to do, and returns the possible moves. *)
 let possible_moves x y board =
   let color = get_color board.(x).(y) in
   match get_piece board.(x).(y) with
-  | King -> king_move x y color board
+  | King -> castle x y board @ king_move x y color board
   | Queen -> horiz_vert_posib x y color board @ diagonal x y color board
   | Bishop -> diagonal x y color board
   | Rook -> horiz_vert_posib x y color board
@@ -314,6 +411,7 @@ let possible_moves x y board =
   | Pawn -> pawn_moves x y board
   | Empty -> []
 
+(*Attacking moves returns a list of the squares b.(x).(y) is attacking *)
 let attacking_moves x y board =
   let color = get_color board.(x).(y) in
   match get_piece board.(x).(y) with
@@ -341,6 +439,8 @@ let rec initialize_row (b : board) (r : int) (c : int) (p : string list)
       b.(r).(c) <- parse_piece h r c;
       initialize_row b r (c + 1) t
 
+(*Initialize the board with all pieces in initial positions. White
+  pieces are on the bottom*)
 let rec initialize (b : board) (s : string list list) (r : int) : unit =
   match s with
   | [] -> ()
@@ -360,6 +460,7 @@ let rec print_pairs lst =
       print_string "\n";
       print_pairs t
 
+(*Helper method for update_attackers*)
 let rec update_attackers_row r c b wlst blst =
   match c with
   | 8 -> (wlst, blst)
@@ -373,6 +474,8 @@ let rec update_attackers_row r c b wlst blst =
           (blst @ attacking_moves r c b)
       else update_attackers_row r (c + 1) b wlst blst
 
+(*Returns a tuple of white's attacking squares and blacks attacking
+  squares*)
 let rec update_attackers r b wlst blst =
   match r with
   | 8 -> (wlst, blst)
@@ -396,6 +499,7 @@ let in_check c =
   | Tile.Black -> List.mem k.black_king attacking_pos.white
   | _ -> failwith "impossible"
 
+(*Helper for lst_of_attackers*)
 let rec lst_of_attackers_row r c b (lst : (int * int) list) ck =
   match c with
   | 8 -> lst
@@ -412,7 +516,8 @@ let rec lst_of_attackers_row r c b (lst : (int * int) list) ck =
           else lst_of_attackers_row r (c + 1) b lst ck
       | _ -> lst_of_attackers_row r (c + 1) b lst ck)
 
-(*ck is the color of the king, returns the attackers on that king*)
+(*ck is the color of the king, returns the coordinates of the attackers
+  on that king*)
 let rec lst_of_attackers r b lst ck =
   match r with
   | 8 -> lst
@@ -448,6 +553,7 @@ let get_king_moves ck b =
         []
   | None -> failwith "unimplemented"
 
+(*Helper for in_line_with_king*)
 let rook_line r c rk ck b [] =
   if r > rk then
     [ (r, c) ] @ check_up_vert r c [] (get_color b.(r).(c)) b
@@ -457,6 +563,7 @@ let rook_line r c rk ck b [] =
     [ (r, c) ] @ check_left_horz r c [] (get_color b.(r).(c)) b
   else [ (r, c) ] @ check_right_horz r c [] (get_color b.(r).(c)) b
 
+(*Helper for in_line_with_king*)
 let bishop_line r c rk ck b [] =
   if r > rk && c < ck then
     (*Bottom left of king*)
@@ -469,12 +576,12 @@ let bishop_line r c rk ck b [] =
     [ (r, c) ] @ diagonal_down_right r c [] (get_color b.(r).(c)) b
   else [ (r, c) ] @ diagonal_down_left r c [] (get_color b.(r).(c)) b
 
+(*Helper for in_line_with_king*)
 let queen_line r c rk ck b [] =
   if r = rk || c = ck then rook_line r c rk ck b []
   else bishop_line r c rk ck b []
 
-(*Top right of king*)
-
+(*Returns the king position given the color of the king*)
 let get_king_pos ck =
   match ck with
   | Tile.White -> k.white_king
@@ -510,6 +617,7 @@ let rec get_possible_king_moves r c kmoves lst b =
       else get_possible_king_moves r c t lst b
   | [] -> lst
 
+(*Returns coordinates that can block a check depending on the piece*)
 let in_line_with_king r c ck b =
   let p = get_king_pos ck in
   match get_piece b.(r).(c) with
@@ -521,8 +629,9 @@ let in_line_with_king r c ck b =
   | Pawn -> [ (r, c) ]
   | Empty -> failwith "impossible"
 
-(*The c colored king is in check, this method returns possible moves
-  they can do*)
+(*The c colored king is in check. This method returns possible
+  coordinates that will block the check or get rid of the check. Helper
+  for counter_check method*)
 let get_counter_squares (ck : Tile.c) (b : Tile.tile array array) :
     (int * int) list =
   let clst = lst_of_attackers 0 b [] ck in
@@ -531,8 +640,8 @@ let get_counter_squares (ck : Tile.c) (b : Tile.tile array array) :
   let c = snd attacker in
   in_line_with_king r c ck b
 
-(*get_king_moves ck b @*)
-
+(*Returns true if moving x y to x2 y2 puts the king out of check, false
+  otherwise. Used in check_validity*)
 let counter_check x y x2 y2 b ck =
   match get_piece b.(x).(y) with
   | King -> (
@@ -542,6 +651,7 @@ let counter_check x y x2 y2 b ck =
       | _ -> failwith "impossible")
   | _ -> List.mem (x2, y2) (get_counter_squares ck b)
 
+(*Returns true if a player is in checkmate*)
 let is_checkmate b =
   if in_check Tile.White then
     let r = fst k.white_king in
@@ -570,6 +680,7 @@ let is_checkmate b =
       not (List.mem a attacking_pos.black)
   else false
 
+(*This method returns true if the two coordinates are valid as a move *)
 let check_validity
     (b : board)
     (x : int)
@@ -617,22 +728,83 @@ let get_captured_black = s.black_captured
 
 let get_captured_white = s.white_captured
 
+(*This method is used if a pawn is at the first or last row of the board *)
+let pawn_to_queen x2 y2 c b =
+  match c with
+  | Tile.White ->
+      b.(x2).(y2) <- b.(fst q.white_queen).(snd q.white_queen)
+  | Tile.Black ->
+      b.(x2).(y2) <- b.(fst q.black_queen).(snd q.black_queen)
+  | None -> failwith "impossible"
+
+(* This method does the "castle" move. If the castle conditions are met,
+   it moves the rook to its respective square.*)
+let check_castle x y x2 y2 b =
+  match ((x, y), (x2, y2)) with
+  | (7, 3), (7, 1) ->
+      b.(7).(2) <- b.(7).(0);
+      b.(7).(0) <- empty_tile
+  | (7, 3), (7, 5) ->
+      b.(7).(4) <- b.(7).(7);
+      b.(7).(7) <- empty_tile
+  | (0, 3), (0, 1) ->
+      b.(0).(2) <- b.(0).(0);
+      b.(0).(0) <- empty_tile
+  | (0, 3), (0, 5) ->
+      b.(0).(4) <- b.(0).(7);
+      b.(0).(7) <- empty_tile
+  | _, _ -> ()
+
 (*We call check_validity in main so we assume this move_piece takes
   valid positions*)
 let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) :
     bool =
   let c = get_color b.(x).(y) in
+
   if get_piece b.(x).(y) = King then
-    if get_color b.(x).(y) = White then k.white_king <- (x2, y2)
-    else k.black_king <- (x2, y2)
+    if get_color b.(x).(y) = White then (
+      k.white_king <- (x2, y2);
+      k.white_king_moved <- true)
+    else (
+      k.black_king <- (x2, y2);
+      k.black_king_moved <- true)
   else ();
+
+  if get_piece b.(x).(y) = Rook then
+    if r.white_left_rook = (x, y) then (
+      r.white_left_rook <- (x2, y2);
+      r.white_left_rook_moved <- true)
+    else if r.white_right_rook = (x, y) then (
+      r.white_right_rook <- (x2, y2);
+      r.white_right_rook_moved <- true)
+    else if r.black_left_rook = (x, y) then (
+      r.black_left_rook <- (x2, y2);
+      r.black_left_rook_moved <- true)
+    else (
+      r.black_right_rook <- (x2, y2);
+      r.black_right_rook_moved <- true)
+  else ();
+
+  if get_piece b.(x).(y) = Queen then
+    if get_color b.(x).(y) = White then q.white_queen <- (x2, y2)
+    else q.black_queen <- (x2, y2)
+  else ();
+
   let piece1 = b.(x).(y) in
   let piece2 = b.(x2).(y2) in
   b.(x2).(y2) <- piece1;
   b.(x).(y) <- empty_tile;
+
+  if get_piece piece1 = King then check_castle x y x2 y2 b else ();
+
+  if get_piece piece1 = Pawn && (x2 = 0 || x2 = 7) then
+    pawn_to_queen x2 y2 c b
+  else ();
+
   let attacks = update_attackers 0 b [] [] in
   attacking_pos.white <- fst attacks;
   attacking_pos.black <- snd attacks;
+
   if in_check c then (
     b.(x).(y) <- piece1;
     b.(x2).(y2) <- piece2;

@@ -116,7 +116,7 @@ let posib_moves_tests =
     posib_moves_test "(5,7) White Pawn Blocked off" 5 7 [ (6, 6) ];
     posib_moves_test "(2,1) Normal Black Pawn Move" 2 1 [ (3, 1) ];
     check_tiles_test "6 0 and 5 0 Tiles with pawn up" 6 0 5 0
-      (let () = move_piece b 6 0 5 0 in
+      (let _ = move_piece b 6 0 5 0 in
        b)
       [ Empty; Pawn ];
     white_score_test "No captures" b2 6 0 5 0 0;
