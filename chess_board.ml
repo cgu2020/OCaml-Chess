@@ -28,8 +28,21 @@ type queens = {
   mutable black_queen : int * int;
 }
 
-(* Tracks each rook's position and whether they have moved. Utilized in
-   check. *)
+let q = { white_queen = (7, 4); black_queen = (0, 4) }
+
+type attacked_positions = {
+  mutable white : (int * int) list;
+  mutable black : (int * int) list;
+}
+
+let k =
+  {
+    white_king = (7, 3);
+    black_king = (0, 3);
+    white_king_moved = false;
+    black_king_moved = false;
+  }
+
 type rook = {
   mutable white_left_rook : int * int;
   mutable white_right_rook : int * int;
@@ -41,24 +54,6 @@ type rook = {
   mutable black_right_rook_moved : bool;
 }
 
-type attacked_positions = {
-  mutable white : (int * int) list;
-  mutable black : (int * int) list;
-}
-
-(* The King's starting state. It is mutable and can be changed. *)
-let k =
-  {
-    white_king = (7, 3);
-    black_king = (0, 3);
-    white_king_moved = false;
-    black_king_moved = false;
-  }
-
-(* The Queen's starting state. It is mutable and can be changed. *)
-let q = { white_queen = (7, 4); black_queen = (0, 4) }
-
-(* The Rooks's starting state. It is mutable and can be changed. *)
 let r =
   {
     white_left_rook = (7, 0);
@@ -81,7 +76,8 @@ let s =
     black_captured = [];
   }
 
-(* Helper function for finding valid moves to the left horizontally. *)
+(* The next 4 functions are helpers for checking the vertical and
+   horizontal possible moves.*)
 let rec check_left_horz row col acc init_color board =
   if col > 0 then
     if get_piece board.(row).(col - 1) = Empty then
@@ -91,7 +87,6 @@ let rec check_left_horz row col acc init_color board =
     else (row, col) :: acc
   else (row, col) :: acc
 
-(* Helper function for finding valid moves to the right horizontally. *)
 let rec check_right_horz row col acc init_color board =
   if col < 7 then
     if get_piece board.(row).(col + 1) = Empty then
@@ -102,7 +97,6 @@ let rec check_right_horz row col acc init_color board =
     else (row, col) :: acc
   else (row, col) :: acc
 
-(* Helper function for finding valid moves upwards vertically. *)
 let rec check_up_vert row col acc init_color board =
   if row > 0 then
     if get_piece board.(row - 1).(col) = Empty then
@@ -112,7 +106,6 @@ let rec check_up_vert row col acc init_color board =
     else (row, col) :: acc
   else (row, col) :: acc
 
-(* Helper function for finding valid moves downwards vertically. *)
 let rec check_down_vert row col acc init_color board =
   if row < 7 then
     if get_piece board.(row + 1).(col) = Empty then
@@ -122,8 +115,8 @@ let rec check_down_vert row col acc init_color board =
     else (row, col) :: acc
   else (row, col) :: acc
 
-(* Helper function for finding valid moves on the diagonal to the top
-   left *)
+(* The next 4 functions are helpers for checking the diagonal possible
+   moves.*)
 let rec diagonal_up_left row col acc init_color board =
   if row > 0 && col > 0 then
     if get_piece board.(row - 1).(col - 1) = Empty then
@@ -134,8 +127,6 @@ let rec diagonal_up_left row col acc init_color board =
     else (row, col) :: acc
   else (row, col) :: acc
 
-(* Helper function for finding valid moves on the diagonal to the top
-   right *)
 let rec diagonal_up_right row col acc init_color board =
   if row > 0 && col < 7 then
     if get_piece board.(row - 1).(col + 1) = Empty then
@@ -146,8 +137,6 @@ let rec diagonal_up_right row col acc init_color board =
     else (row, col) :: acc
   else (row, col) :: acc
 
-(* Helper function for finding valid moves on the diagonal to the bottom
-   right *)
 let rec diagonal_down_right row col acc init_color board =
   if row < 7 && col < 7 then
     if get_piece board.(row + 1).(col + 1) = Empty then
@@ -158,8 +147,6 @@ let rec diagonal_down_right row col acc init_color board =
     else (row, col) :: acc
   else (row, col) :: acc
 
-(* Helper function for finding valid moves on the diagonal to the bottom
-   left *)
 let rec diagonal_down_left row col acc init_color board =
   if row < 7 && col > 0 then
     if get_piece board.(row + 1).(col - 1) = Empty then
@@ -170,8 +157,8 @@ let rec diagonal_down_left row col acc init_color board =
     else (row, col) :: acc
   else (row, col) :: acc
 
-(* Uses the 4 diagonal helper methods specified above in order to
-   consolidate all of the diagonal positions given a certain piece *)
+(* Uses the helper methods in order to consolidate all of the diagonal
+   positions given a certain piece *)
 let diagonal row col init_color board =
   let lst =
     diagonal_down_left row col [] init_color board
@@ -181,9 +168,8 @@ let diagonal row col init_color board =
   in
   List.filter (fun (x, y) -> x <> row || y <> col) lst
 
-(* Uses the 4 horizontal and vertical helper methods specified above in
-   order to consolidate all of the horizontal and vertical positions
-   given a certain piece *)
+(* Uses the helper methods in order to find all of the possible
+   horizontal and vertical moves that a piece can do.*)
 let horiz_vert_posib row col init_color board =
   let lst =
     check_left_horz row col [] init_color board
@@ -193,14 +179,12 @@ let horiz_vert_posib row col init_color board =
   in
   List.filter (fun (x, y) -> x <> row || y <> col) lst
 
-(* Checks all of the valid places that the king can move to. Used in
-   king_move's filter function *)
+(* Checks all of the places that the king can move to *)
 let valid_features x y init_color board =
   x >= 0 && x <= 7 && y >= 0 && y <= 7
   && not (get_color board.(x).(y) = init_color)
 
-(* Returns all of the valid moves for the king piece given the current
-   board state. *)
+(* Updated so that if the piece is of the same color it cant move there. *)
 let king_move row col init_color board =
   let lst =
     [
@@ -216,14 +200,13 @@ let king_move row col init_color board =
   in
   List.filter (fun (x, y) -> valid_features x y init_color board) lst
 
-(* Helper method useful for testing, prints out the cooridnate *)
 let print_coor x y =
   print_int x;
   print_string ",";
   print_int y
 
-(* Returns all of the possible moves for a knight given a current board. *)
 let knight_moves row col init_color board =
+  (*print_coor row col;*)
   let lst =
     [
       (row + 2, col - 1);
@@ -308,8 +291,6 @@ let rec remove_pawn_blocked row col board lst =
       then remove_pawn_blocked row col board t
       else h :: remove_pawn_blocked row col board t
 
-(* Returns all of the possible moves for a pawn piece. Uses the helper
-   methods that are above *)
 let pawn_moves row col board =
   let color = get_color board.(row).(col) in
   if color = White && row = 6 then
@@ -336,6 +317,7 @@ let white_right_col row col board = [ (row - 1, col - 1) ]
 let white_middle_col row col board =
   [ (row - 1, col + 1); (row - 1, col - 1) ]
 
+(*Helper for pawn_attacking_moves*)
 let white_pawn_attacking_squares row col board =
   if col = 0 then white_left_col row col board
   else if col = 7 then white_right_col row col board
@@ -348,17 +330,18 @@ let black_right_col row col board = [ (row + 1, col - 1) ]
 let black_middle_col row col board =
   [ (row + 1, col + 1); (row + 1, col - 1) ]
 
+(*Helper for pawn_attacking_moves*)
 let black_pawn_attacking_squares row col board =
   if col = 0 then black_left_col row col board
   else if col = 7 then black_right_col row col board
   else black_middle_col row col board
 
+(*Returns a pawn's attacking moves*)
 let pawn_attacking_moves row col b =
   let color = get_color b.(row).(col) in
   if color = Tile.White then white_pawn_attacking_squares row col b
   else black_pawn_attacking_squares row col b
 
-(* Checks whether white king is able to castle left. *)
 let lw_rook_castle_condit board =
   k.white_king_moved = false
   && r.white_left_rook_moved = false
@@ -398,26 +381,29 @@ let rb_rook_castle_condit board =
   && (not (List.mem (0, 3) attacking_pos.white))
   && not (List.mem (0, 5) attacking_pos.white)
 
-(* Adds the "castle" moves to the kings possible moves. Adds the moves
-   in if the conditions are met. *)
-let castle lst x y board =
+(*It returns the castle squares the king can go to*)
+let castle x y board =
   match get_color board.(x).(y) with
   | White ->
-      if lw_rook_castle_condit board then (7, 1) :: lst
-      else if rw_rook_castle_condit board then (7, 5) :: lst
-      else lst
+      if lw_rook_castle_condit board && rw_rook_castle_condit board then
+        [ (7, 1); (7, 5) ]
+      else if lw_rook_castle_condit board then [ (7, 1) ]
+      else if rw_rook_castle_condit board then [ (7, 5) ]
+      else []
   | Black ->
-      if lb_rook_castle_condit board then (0, 1) :: lst
-      else if rb_rook_castle_condit board then (0, 5) :: lst
-      else lst
-  | None -> failwith "not possible"
+      if lb_rook_castle_condit board && rb_rook_castle_condit board then
+        [ (0, 1); (0, 5) ]
+      else if lb_rook_castle_condit board then [ (0, 1) ]
+      else if rb_rook_castle_condit board then [ (0, 5) ]
+      else []
+  | None -> []
 
 (* Given a coordinate, it matches the piece type with the moves that the
    piece is able to do, and returns the possible moves. *)
 let possible_moves x y board =
   let color = get_color board.(x).(y) in
   match get_piece board.(x).(y) with
-  | King -> castle (king_move x y color board) x y board
+  | King -> castle x y board @ king_move x y color board
   | Queen -> horiz_vert_posib x y color board @ diagonal x y color board
   | Bishop -> diagonal x y color board
   | Rook -> horiz_vert_posib x y color board
@@ -425,6 +411,7 @@ let possible_moves x y board =
   | Pawn -> pawn_moves x y board
   | Empty -> []
 
+(*Attacking moves returns a list of the squares b.(x).(y) is attacking *)
 let attacking_moves x y board =
   let color = get_color board.(x).(y) in
   match get_piece board.(x).(y) with
@@ -452,6 +439,8 @@ let rec initialize_row (b : board) (r : int) (c : int) (p : string list)
       b.(r).(c) <- parse_piece h r c;
       initialize_row b r (c + 1) t
 
+(*Initialize the board with all pieces in initial positions. White
+  pieces are on the bottom*)
 let rec initialize (b : board) (s : string list list) (r : int) : unit =
   match s with
   | [] -> ()
@@ -471,6 +460,7 @@ let rec print_pairs lst =
       print_string "\n";
       print_pairs t
 
+(*Helper method for update_attackers*)
 let rec update_attackers_row r c b wlst blst =
   match c with
   | 8 -> (wlst, blst)
@@ -484,6 +474,8 @@ let rec update_attackers_row r c b wlst blst =
           (blst @ attacking_moves r c b)
       else update_attackers_row r (c + 1) b wlst blst
 
+(*Returns a tuple of white's attacking squares and blacks attacking
+  squares*)
 let rec update_attackers r b wlst blst =
   match r with
   | 8 -> (wlst, blst)
@@ -507,6 +499,7 @@ let in_check c =
   | Tile.Black -> List.mem k.black_king attacking_pos.white
   | _ -> failwith "impossible"
 
+(*Helper for lst_of_attackers*)
 let rec lst_of_attackers_row r c b (lst : (int * int) list) ck =
   match c with
   | 8 -> lst
@@ -523,7 +516,8 @@ let rec lst_of_attackers_row r c b (lst : (int * int) list) ck =
           else lst_of_attackers_row r (c + 1) b lst ck
       | _ -> lst_of_attackers_row r (c + 1) b lst ck)
 
-(*ck is the color of the king, returns the attackers on that king*)
+(*ck is the color of the king, returns the coordinates of the attackers
+  on that king*)
 let rec lst_of_attackers r b lst ck =
   match r with
   | 8 -> lst
@@ -559,6 +553,7 @@ let get_king_moves ck b =
         []
   | None -> failwith "unimplemented"
 
+(*Helper for in_line_with_king*)
 let rook_line r c rk ck b [] =
   if r > rk then
     [ (r, c) ] @ check_up_vert r c [] (get_color b.(r).(c)) b
@@ -568,6 +563,7 @@ let rook_line r c rk ck b [] =
     [ (r, c) ] @ check_left_horz r c [] (get_color b.(r).(c)) b
   else [ (r, c) ] @ check_right_horz r c [] (get_color b.(r).(c)) b
 
+(*Helper for in_line_with_king*)
 let bishop_line r c rk ck b [] =
   if r > rk && c < ck then
     (*Bottom left of king*)
@@ -580,12 +576,12 @@ let bishop_line r c rk ck b [] =
     [ (r, c) ] @ diagonal_down_right r c [] (get_color b.(r).(c)) b
   else [ (r, c) ] @ diagonal_down_left r c [] (get_color b.(r).(c)) b
 
+(*Helper for in_line_with_king*)
 let queen_line r c rk ck b [] =
   if r = rk || c = ck then rook_line r c rk ck b []
   else bishop_line r c rk ck b []
 
-(*Top right of king*)
-
+(*Returns the king position given the color of the king*)
 let get_king_pos ck =
   match ck with
   | Tile.White -> k.white_king
@@ -621,6 +617,7 @@ let rec get_possible_king_moves r c kmoves lst b =
       else get_possible_king_moves r c t lst b
   | [] -> lst
 
+(*Returns coordinates that can block a check depending on the piece*)
 let in_line_with_king r c ck b =
   let p = get_king_pos ck in
   match get_piece b.(r).(c) with
@@ -632,8 +629,9 @@ let in_line_with_king r c ck b =
   | Pawn -> [ (r, c) ]
   | Empty -> failwith "impossible"
 
-(*The c colored king is in check, this method returns possible moves
-  they can do*)
+(*The c colored king is in check. This method returns possible
+  coordinates that will block the check or get rid of the check. Helper
+  for counter_check method*)
 let get_counter_squares (ck : Tile.c) (b : Tile.tile array array) :
     (int * int) list =
   let clst = lst_of_attackers 0 b [] ck in
@@ -642,8 +640,8 @@ let get_counter_squares (ck : Tile.c) (b : Tile.tile array array) :
   let c = snd attacker in
   in_line_with_king r c ck b
 
-(*get_king_moves ck b @*)
-
+(*Returns true if moving x y to x2 y2 puts the king out of check, false
+  otherwise. Used in check_validity*)
 let counter_check x y x2 y2 b ck =
   match get_piece b.(x).(y) with
   | King -> (
@@ -653,15 +651,7 @@ let counter_check x y x2 y2 b ck =
       | _ -> failwith "impossible")
   | _ -> List.mem (x2, y2) (get_counter_squares ck b)
 
-let promotion x y x2 y2 b =
-  match get_piece b.(x).(y) with
-  | Pawn -> (
-      match get_color b.(x).(y) with
-      | White -> if x2 = 0 then true else false
-      | Black -> if x2 = 7 then true else false
-      | _ -> false)
-  | _ -> false
-
+(*Returns true if a player is in checkmate*)
 let is_checkmate b =
   if in_check Tile.White then
     let r = fst k.white_king in
@@ -690,6 +680,7 @@ let is_checkmate b =
       not (List.mem a attacking_pos.black)
   else false
 
+(*This method returns true if the two coordinates are valid as a move *)
 let check_validity
     (b : board)
     (x : int)
@@ -737,56 +728,48 @@ let get_captured_black = s.black_captured
 
 let get_captured_white = s.white_captured
 
+(*This method is used if a pawn is at the first or last row of the board *)
+let pawn_to_queen x2 y2 c b =
+  match c with
+  | Tile.White ->
+      b.(x2).(y2) <- b.(fst q.white_queen).(snd q.white_queen)
+  | Tile.Black ->
+      b.(x2).(y2) <- b.(fst q.black_queen).(snd q.black_queen)
+  | None -> failwith "impossible"
+
 (* This method does the "castle" move. If the castle conditions are met,
    it moves the rook to its respective square.*)
-(*let check_castle x y b = if x = 7 && y = 1 then if
-  r.white_left_rook_moved = false && k.white_king_moved = false then if
-  List.mem (7, 2) attacking_pos.black then ( b.(7).(3) <- b.(7).(1);
-  b.(7).(1) <- empty_tile (*switch the king back if it crossed over
-  check*)) else ( b.(7).(2) <- b.(7).(0); (*Put rook into correct
-  position*) b.(7).(0) <- empty_tile) else () else if x = 7 && y = 5
-  then if r.white_right_rook_moved = false && k.white_king_moved = false
-  then ( b.(7).(4) <- b.(7).(7); b.(7).(7) <- empty_tile) else () else
-  if x = 0 && y = 1 then if r.black_left_rook_moved = false &&
-  k.black_king_moved = false then ( b.(0).(2) <- b.(0).(0); b.(0).(0) <-
-  empty_tile) else () else if x = 0 && y = 5 then if
-  r.black_right_rook_moved = false && k.black_king_moved = false then (
-  b.(0).(4) <- b.(0).(7); b.(0).(7) <- empty_tile) else ()*)
-let check_castle x y b =
-  if x = 7 && y = 1 then
-    if r.white_left_rook_moved = false && k.white_king_moved = false
-    then (
+let check_castle x y x2 y2 b =
+  match ((x, y), (x2, y2)) with
+  | (7, 3), (7, 1) ->
       b.(7).(2) <- b.(7).(0);
-      b.(7).(0) <- empty_tile)
-    else ()
-  else if x = 7 && y = 5 then
-    if r.white_right_rook_moved = false && k.white_king_moved = false
-    then (
+      b.(7).(0) <- empty_tile
+  | (7, 3), (7, 5) ->
       b.(7).(4) <- b.(7).(7);
-      b.(7).(7) <- empty_tile)
-    else ()
-  else if x = 0 && y = 1 then
-    if r.black_left_rook_moved = false && k.black_king_moved = false
-    then (
+      b.(7).(7) <- empty_tile
+  | (0, 3), (0, 1) ->
       b.(0).(2) <- b.(0).(0);
-      b.(0).(0) <- empty_tile)
-    else ()
-  else if x = 0 && y = 5 then
-    if r.black_right_rook_moved = false && k.black_king_moved = false
-    then (
+      b.(0).(0) <- empty_tile
+  | (0, 3), (0, 5) ->
       b.(0).(4) <- b.(0).(7);
-      b.(0).(7) <- empty_tile)
-    else ()
+      b.(0).(7) <- empty_tile
+  | _, _ -> ()
 
 (*We call check_validity in main so we assume this move_piece takes
   valid positions*)
-let rec move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int)
-    : bool =
+let move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int) :
+    bool =
   let c = get_color b.(x).(y) in
-  if get_piece b.(x).(y) = Queen then
-    if get_color b.(x).(y) = White then q.white_queen <- (x2, y2)
-    else q.black_queen <- (x2, y2)
+
+  if get_piece b.(x).(y) = King then
+    if get_color b.(x).(y) = White then (
+      k.white_king <- (x2, y2);
+      k.white_king_moved <- true)
+    else (
+      k.black_king <- (x2, y2);
+      k.black_king_moved <- true)
   else ();
+
   if get_piece b.(x).(y) = Rook then
     if r.white_left_rook = (x, y) then (
       r.white_left_rook <- (x2, y2);
@@ -802,32 +785,26 @@ let rec move_piece (b : board) (x : int) (y : int) (x2 : int) (y2 : int)
       r.black_right_rook_moved <- true)
   else ();
 
+  if get_piece b.(x).(y) = Queen then
+    if get_color b.(x).(y) = White then q.white_queen <- (x2, y2)
+    else q.black_queen <- (x2, y2)
+  else ();
+
   let piece1 = b.(x).(y) in
   let piece2 = b.(x2).(y2) in
   b.(x2).(y2) <- piece1;
   b.(x).(y) <- empty_tile;
 
-  if get_piece piece1 = King then check_castle x2 y2 b;
+  if get_piece piece1 = King then check_castle x y x2 y2 b else ();
 
-  if get_piece b.(x).(y) = King then
-    if get_color b.(x).(y) = White then (
-      k.white_king <- (x2, y2);
-      k.white_king_moved <- true)
-    else (
-      k.black_king <- (x2, y2);
-      k.black_king_moved <- true)
+  if get_piece piece1 = Pawn && (x2 = 0 || x2 = 7) then
+    pawn_to_queen x2 y2 c b
   else ();
-  (*then b.(x).(y) <- empty_tile;*)
-  (* Shouldnt be b.(x).(y) *)
-  (* Kills the game and doesnt switch *)
-  (* if promotion x y x2 y2 b then match get_color b.(x).(y) with |
-     White -> let x3 = fst q.white_queen in let y3 = snd q.white_queen
-     in b.(x2).(y2) <- b.(x3).(y3) | Black -> let x3 = fst q.black_queen
-     in let y3 = snd q.black_queen in b.(x2).(y2) <- b.(x3).(y3) | _ ->
-     failwith "unimplemented" else ();*)
+
   let attacks = update_attackers 0 b [] [] in
   attacking_pos.white <- fst attacks;
   attacking_pos.black <- snd attacks;
+
   if in_check c then (
     b.(x).(y) <- piece1;
     b.(x2).(y2) <- piece2;
