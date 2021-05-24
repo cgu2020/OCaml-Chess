@@ -7,9 +7,9 @@ let test_board =
   "r,n,b,k,q,b,n,r/p, ,p,p, , , , / ,p, , ,p,p, , / , , ,R, , ,p, / , \
    , , , , , , / , ,P,P, ,N, ,p/P,P, , ,P,P,P,P/ ,N,B,K,Q,B, ,R"
 
-let board2 =
-  "r, ,b,k,q,b,n,r/p,p,p, ,p,p,p,p / , ,n, , , , , / , , ,p, , , , / , \
-   , , ,P, , , / , , , , , , , /P,P,P,P, ,P,P,P/R,N,B,K,Q,B,N,R"
+(*let board2 = "r, ,b,k,q,b,n,r/p,p,p, ,p,p,p,p / , ,n, , , , , / , ,
+  ,p, , , , / , \ , , ,P, , , / , , , , , , , /P,P,P,P,
+  ,P,P,P/R,N,B,K,Q,B,N,R"*)
 
 (* 0 r n b k q b n r 1 p - p p - - - - 2 - p - - p p - - 3 - - - R - - p
    - 4 - - - - - - - - 5 - - P P - N - p 6 P P - - P P P P 7 - N B K Q B
@@ -22,9 +22,7 @@ let b = init
 
 let c = initialize b (string_to_lists test_board) 0
 
-let b2 = init
-
-let c = initialize b2 (string_to_lists board2) 0
+(*let b2 = init let c = initialize b2 (string_to_lists board2) 0*)
 
 let cmp_set_like_lists lst1 lst2 =
   let uniq1 = List.sort_uniq compare lst1 in
@@ -54,7 +52,7 @@ let posib_moves_test name row col expected_output : test =
 let white_score_test name b x y x2 y2 expected_output : test =
   name >:: fun _ ->
   let filler = check_validity b x y x2 y2 0 in
-  let () = move_piece b x y x2 y2;
+  move_piece b x y x2 y2;
   assert_equal expected_output get_white_score
 
 let black_score_test name expected_output : test =
@@ -119,7 +117,7 @@ let posib_moves_tests =
       (let _ = move_piece b 6 0 5 0 in
        b)
       [ Empty; Pawn ];
-    white_score_test "No captures" b2 6 0 5 0 0;
+    (*white_score_test "No captures" b2 6 0 5 0 0;*)
   ]
 
 let suite =
