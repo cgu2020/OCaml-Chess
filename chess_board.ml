@@ -445,6 +445,17 @@ let attacking_moves x y board =
   | Pawn -> pawn_attacking_moves x y board
   | Empty -> []
 
+let attacking_moves_without_king x y board =
+  let color = get_color board.(x).(y) in
+  match get_piece board.(x).(y) with
+  | King -> []
+  | Queen -> horiz_vert_posib x y color board @ diagonal x y color board
+  | Bishop -> diagonal x y color board
+  | Rook -> horiz_vert_posib x y color board
+  | Knight -> knight_moves x y color board
+  | Pawn -> pawn_attacking_moves x y board
+  | Empty -> []
+
 let starterboard =
   "r,n,b,k,q,b,n,r/p,p,p,p,p,p,p,p/ , , , , , , , / , , , , , , , / , \
    , , , , , , / , , , , , , , /P,P,P,P,P,P,P,P/R,N,B,K,Q,B,N,R"
@@ -650,19 +661,44 @@ let counter_check x y x2 y2 b ck =
       | _ -> failwith "impossible")
   | _ -> List.mem (x2, y2) (get_counter_squares ck b)
 
+let rec attackers_without_king_row r c b wlst blst =
+  match c with
+  | 8 -> (wlst, blst)
+  | y ->
+      if get_color b.(r).(c) = White then
+        attackers_without_king_row r (c + 1) b
+          (wlst @ attacking_moves_without_king r c b)
+          blst
+      else if get_color b.(r).(c) = Black then
+        attackers_without_king_row r (c + 1) b wlst
+          (blst @ attacking_moves_without_king r c b)
+      else attackers_without_king_row r (c + 1) b wlst blst
+
+(*Returns a tuple of white's attacking squares and blacks attacking
+  squares*)
+let rec attackers_without_king r b wlst blst =
+  match r with
+  | 8 -> (wlst, blst)
+  | x ->
+      let tup = attackers_without_king_row x 0 b [] [] in
+      attackers_without_king (r + 1) b (wlst @ fst tup) (blst @ snd tup)
+
 (*Returns true if a player is in checkmate*)
 let is_checkmate b =
   if in_check Tile.White then
     let r = fst k.white_king in
     let c = snd k.white_king in
     let kmoves = possible_moves r c b in
+    let whites_attacking_squares =
+      fst (attackers_without_king 0 b [] [])
+    in
     if not (List.length (get_possible_king_moves r c kmoves [] b) = 0)
     then false
     else if List.length (lst_of_attackers 0 b [] Tile.White) > 1 then
       true
     else
       let a = List.nth (lst_of_attackers 0 b [] Tile.White) 0 in
-      not (List.mem a attacking_pos.white)
+      not (List.mem a whites_attacking_squares)
     (*check number of attackers is 1 or greater*)
     (*or if king has no moves and all possible moves of king colored
       pieces can't go to counter squres *)
@@ -670,13 +706,16 @@ let is_checkmate b =
     let r = fst k.black_king in
     let c = snd k.black_king in
     let kmoves = possible_moves r c b in
+    let blacks_attacking_squares =
+      fst (attackers_without_king 0 b [] [])
+    in
     if not (List.length (get_possible_king_moves r c kmoves [] b) = 0)
     then false
     else if List.length (lst_of_attackers 0 b [] Tile.Black) > 1 then
       true
     else
       let a = List.nth (lst_of_attackers 0 b [] Tile.Black) 0 in
-      not (List.mem a attacking_pos.black)
+      not (List.mem a blacks_attacking_squares)
   else false
 
 (*This method returns true if the two coordinates are valid as a move *)
