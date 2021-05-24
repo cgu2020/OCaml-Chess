@@ -28,7 +28,7 @@ type queens = {
   mutable black_queen : int * int;
 }
 
-let q = { white_queen = (7, 4); black_queen = (0, 4) }
+let q = { white_queen = (7, 3); black_queen = (0, 3) }
 
 type attacked_positions = {
   mutable white : (int * int) list;
@@ -37,8 +37,8 @@ type attacked_positions = {
 
 let k =
   {
-    white_king = (7, 3);
-    black_king = (0, 3);
+    white_king = (7, 4);
+    black_king = (0, 4);
     white_king_moved = false;
     black_king_moved = false;
   }
@@ -369,19 +369,20 @@ let lw_rook_castle_condit board =
   && r.white_left_rook_moved = false
   && get_piece board.(7).(1) = Empty
   && get_piece board.(7).(2) = Empty
+  && get_piece board.(7).(3) = Empty
   && (not (List.mem (7, 2) attacking_pos.black))
-  && (not (List.mem (7, 1) attacking_pos.black))
-  && not (List.mem (7, 3) attacking_pos.black)
+  && (not (List.mem (7, 3) attacking_pos.black))
+  && not (List.mem (7, 4) attacking_pos.black)
 
 (* Checks whether white king is able to castle right. *)
 let rw_rook_castle_condit board =
   k.white_king_moved = false
   && r.white_right_rook_moved = false
-  && get_piece board.(7).(4) = Empty
   && get_piece board.(7).(5) = Empty
+  && get_piece board.(7).(6) = Empty
   && (not (List.mem (7, 4) attacking_pos.black))
-  && (not (List.mem (7, 3) attacking_pos.black))
-  && not (List.mem (7, 5) attacking_pos.black)
+  && (not (List.mem (7, 5) attacking_pos.black))
+  && not (List.mem (7, 6) attacking_pos.black)
 
 (* Checks whether black king is able to castle left. *)
 let lb_rook_castle_condit board =
@@ -389,34 +390,35 @@ let lb_rook_castle_condit board =
   && r.black_left_rook_moved = false
   && get_piece board.(0).(1) = Empty
   && get_piece board.(0).(2) = Empty
+  && get_piece board.(0).(3) = Empty
   && (not (List.mem (0, 2) attacking_pos.white))
-  && (not (List.mem (0, 1) attacking_pos.white))
+  && (not (List.mem (0, 4) attacking_pos.white))
   && not (List.mem (0, 3) attacking_pos.white)
 
 (* Checks whether black king is able to castle right. *)
 let rb_rook_castle_condit board =
   k.black_king_moved = false
   && r.black_right_rook_moved = false
-  && get_piece board.(0).(4) = Empty
   && get_piece board.(0).(5) = Empty
+  && get_piece board.(0).(6) = Empty
   && (not (List.mem (0, 4) attacking_pos.white))
-  && (not (List.mem (0, 3) attacking_pos.white))
-  && not (List.mem (0, 5) attacking_pos.white)
+  && (not (List.mem (0, 5) attacking_pos.white))
+  && not (List.mem (0, 6) attacking_pos.white)
 
 (*It returns the castle squares the king can go to*)
 let castle x y board =
   match get_color board.(x).(y) with
   | White ->
       if lw_rook_castle_condit board && rw_rook_castle_condit board then
-        [ (7, 1); (7, 5) ]
-      else if lw_rook_castle_condit board then [ (7, 1) ]
-      else if rw_rook_castle_condit board then [ (7, 5) ]
+        [ (7, 2); (7, 6) ]
+      else if lw_rook_castle_condit board then [ (7, 2) ]
+      else if rw_rook_castle_condit board then [ (7, 6) ]
       else []
   | Black ->
       if lb_rook_castle_condit board && rb_rook_castle_condit board then
-        [ (0, 1); (0, 5) ]
-      else if lb_rook_castle_condit board then [ (0, 1) ]
-      else if rb_rook_castle_condit board then [ (0, 5) ]
+        [ (0, 2); (0, 6) ]
+      else if lb_rook_castle_condit board then [ (0, 2) ]
+      else if rb_rook_castle_condit board then [ (0, 6) ]
       else []
   | None -> []
 
@@ -468,8 +470,8 @@ let attacking_moves_without_king x y board =
   | Empty -> []
 
 let starterboard =
-  "r,n,b,k,q,b,n,r/p,p,p,p,p,p,p,p/ , , , , , , , / , , , , , , , / , \
-   , , , , , , / , , , , , , , /P,P,P,P,P,P,P,P/R,N,B,K,Q,B,N,R"
+  "r,n,b,q,k,b,n,r/p,p,p,p,p,p,p,p/ , , , , , , , / , , , , , , , / , \
+   , , , , , , / , , , , , , , /P,P,P,P,P,P,P,P/R,N,B,Q,K,B,N,R"
 
 let string_to_lists (s : string) =
   let r = String.split_on_char '/' s in
@@ -848,17 +850,17 @@ let pawn_to_queen x2 y2 c b =
    it moves the rook to its respective square.*)
 let check_castle x y x2 y2 b =
   match ((x, y), (x2, y2)) with
-  | (7, 3), (7, 1) ->
-      b.(7).(2) <- b.(7).(0);
+  | (7, 4), (7, 2) ->
+      b.(7).(3) <- b.(7).(0);
       b.(7).(0) <- empty_tile
-  | (7, 3), (7, 5) ->
-      b.(7).(4) <- b.(7).(7);
+  | (7, 4), (7, 6) ->
+      b.(7).(5) <- b.(7).(7);
       b.(7).(7) <- empty_tile
-  | (0, 3), (0, 1) ->
-      b.(0).(2) <- b.(0).(0);
+  | (0, 4), (0, 2) ->
+      b.(0).(3) <- b.(0).(0);
       b.(0).(0) <- empty_tile
-  | (0, 3), (0, 5) ->
-      b.(0).(4) <- b.(0).(7);
+  | (0, 4), (0, 6) ->
+      b.(0).(5) <- b.(0).(7);
       b.(0).(7) <- empty_tile
   | _, _ -> ()
 
