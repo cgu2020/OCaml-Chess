@@ -87,9 +87,28 @@ let rec get_coords lst =
   | h :: t -> get_int h.[1] :: char_to_int h.[0] :: get_coords t
   | [] -> []
 
+let rec print_list l =
+  match l with
+  | h :: t ->
+      print_int (fst h);
+      print_string ",";
+      print_int (snd h);
+      print_string "\n";
+      print_list t
+  | [] -> ()
+
 let rec play_game b c =
   let o = Sys.command "clear" in
   print b;
+  let _ = print_list (tester_get_king_moves b) in
+  print_string "\nIf white can block: ";
+  let _ = print_string (string_of_bool (tester_can_block b)) in
+  print_string "\nNumber of attackers on white: ";
+  let _ = print_int (tester_lst_attackers b) in
+  print_string "\n";
+  print_string "If white is in checkmate: ";
+  let _ = print_string (string_of_bool (is_checkmate b)) in
+  print_string "\n";
   let () = print_string "Enter two valid positions (e.g. a2 a4)" in
   let i = read_line () in
   if check_valid_move i then
@@ -112,6 +131,5 @@ let main () =
   let b = init in
   initialize b (string_to_lists starterboard) 0;
   play_game b 0
-
 
 let () = main ()

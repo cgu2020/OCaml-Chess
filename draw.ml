@@ -121,6 +121,12 @@ let draw_cursor (c : Dom_html.canvasElement Js.t) (s : selection) =
       ctx##fill
   | _, _ -> ()
 
+let draw_check (c : Dom_html.canvasElement Js.t) color s =
+  let ctx = c##getContext Html._2d_ in
+  let _ = ctx##.fillStyle := Js.string color in
+  let _ = ctx##.font := Js.string "30px Arial" in
+  ctx##fillText (Js.string s) 190.0 252.0
+
 let get_coor (s : o) =
   match s with Coor x -> x | Unselected -> failwith "notfound"
 
@@ -146,7 +152,13 @@ let rec update_loop (c : Dom_html.canvasElement Js.t) : unit =
     sel2.empty <- true)
   else draw_cursor c sel1;
   draw_pieces c b;
-  draw_outline c
+  draw_outline c;
+  let bl = in_check Tile.Black in
+  let wh = in_check Tile.White in
+  if is_checkmate b && bl then draw_check c "light" "White Wins"
+  else if is_checkmate b && wh then draw_check c "black" "Black wins"
+  else if bl then draw_check c "black" "Check"
+  else if wh then draw_check c "lightgrey" "Check"
 
 let onclick c (evt : #Dom_html.mouseEvent Js.t) =
   let rect = c##getBoundingClientRect in

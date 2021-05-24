@@ -2,7 +2,7 @@ MODULES=chess_board command game_logic tile main
 OBJECTS=$(MODULES:=.cmo)
 
 MLS=$(MODULES:=.ml)
-MLIS=$(MODULES:=.mli)
+MLIS=chess_board.mli command.mli game_logic.mli tile.mli
 TEST=test.byte
 MAIN=main.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
@@ -14,7 +14,7 @@ build:
 	$(OCAMLBUILD) $(OBJECTS) 
 
 test:
-	$(OCAMLBUILD) -tag 'debug' $(TEST) && ./$(TEST) -runner sequential
+	$(OCAMLBUILD) -tag 'debug' test3.byte && ./test3.byte -runner sequential
 
 js:
 	dune build --profile release ./draw.bc.js
@@ -35,12 +35,12 @@ docs: docs-public docs-private
 	
 docs-public: build
 	mkdir -p _doc.public
-	ocamlfind ocamldoc -I _build -package yojson,ANSITerminal \
+	ocamlfind ocamldoc -I _build -package yojson,ANSITerminal,Js_of_ocaml \
 		-html -stars -d _doc.public $(MLIS)
 
 docs-private: build
 	mkdir -p _doc.private
-	ocamlfind ocamldoc -I _build -package yojson,ANSITerminal \
+	ocamlfind ocamldoc -I _build -package yojson,ANSITerminal,Js_of_ocaml\
 		-html -stars -d _doc.private \
 		-inv-merge-ml-mli -m A $(MLIS) $(MLS)
 

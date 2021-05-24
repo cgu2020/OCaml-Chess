@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="Start" href="index.html">
+<link rel="next" href="Command.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of exceptions" rel=Appendix href="index_exceptions.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Chess_board" rel="Chapter" href="Chess_board.html">
+<link title="Command" rel="Chapter" href="Command.html">
+<link title="Game_logic" rel="Chapter" href="Game_logic.html">
+<link title="Tile" rel="Chapter" href="Tile.html"><title>Chess_board</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Command.html" title="Command">Next</a>
+</div>
+<h1>Module <a href="type_Chess_board.html">Chess_board</a></h1>
+
+<pre><span id="MODULEChess_board"><span class="keyword">module</span> Chess_board</span>: <code class="code">sig</code> <a href="Chess_board.html">..</a> <code class="code">end</code></pre><div class="info module top">
+<div class="info-desc">
+<p>The abstract type that represents a chessboard.</p>
+</div>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEboard"><span class="keyword">type</span> <code class="type"></code>board</span> = <code class="type"><a href="Tile.html#TYPEtile">Tile.tile</a> array array</code> </pre>
+
+
+<pre><span id="TYPEscoreboard"><span class="keyword">type</span> <code class="type"></code>scoreboard</span> </pre>
+
+
+<pre><span id="EXCEPTIONInvalidMove"><span class="keyword">exception</span> InvalidMove</span></pre>
+
+<pre><span id="VALpossible_moves"><span class="keyword">val</span> possible_moves</span> : <code class="type">int -> int -> <a href="Chess_board.html#TYPEboard">board</a> -> (int * int) list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">possible_moves a</code> is a set-like list of all the tiles that a can
+    move to.</p>
+</div>
+</div>
+<p><code class="code">check_validity a b</code> is a boolean of whether moving tile a to tile b
+    is a valid move</p>
+<p>val check_validity : board -&gt; int -&gt; int -&gt; int -&gt; int -&gt; bool</p>
+
+<pre><span id="VALstring_to_lists"><span class="keyword">val</span> string_to_lists</span> : <code class="type">string -> string list list</code></pre>
+<pre><span id="VALstarterboard"><span class="keyword">val</span> starterboard</span> : <code class="type">string</code></pre>
+<pre><span id="VALinitialize"><span class="keyword">val</span> initialize</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a> -> string list list -> int -> unit</code></pre>
+<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a></code></pre>
+<pre><span id="VALcheck_validity"><span class="keyword">val</span> check_validity</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a> -> int -> int -> int -> int -> int -> bool</code></pre>
+<pre><span id="VALget_white_score"><span class="keyword">val</span> get_white_score</span> : <code class="type">int</code></pre>
+<pre><span id="VALget_black_score"><span class="keyword">val</span> get_black_score</span> : <code class="type">int</code></pre>
+<pre><span id="VALget_captured_white"><span class="keyword">val</span> get_captured_white</span> : <code class="type"><a href="Tile.html#TYPEp">Tile.p</a> list</code></pre>
+<pre><span id="VALget_captured_black"><span class="keyword">val</span> get_captured_black</span> : <code class="type"><a href="Tile.html#TYPEp">Tile.p</a> list</code></pre>
+<pre><span id="VALmove_piece"><span class="keyword">val</span> move_piece</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a> -> int -> int -> int -> int -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">move_piece b x1 y1 x2 y2 c</code> clears tile (x1,y1) and replaces tile
+    (x2,y2) with tile (x1, y1). Invalid move if the int c does not match
+    the color Raises <code class="code">Invalid t</code> if <code class="code">t</code> is not a valid tile to move to.</p>
+</div>
+</div>
+</body></html>
