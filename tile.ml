@@ -73,8 +73,9 @@ let parse_piece (s : string) (r : int) (c : int) : tile =
   in
   let color =
     if piece = Empty then None
-    else if check_capital s then White
+    else if check_capital s then White (*White*)
     else Black
+    (*Black*)
   in
   let i =
     match (piece, color) with

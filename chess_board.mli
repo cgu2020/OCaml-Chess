@@ -37,6 +37,12 @@ val get_captured_white : Tile.p list
 (** [get_captured_white] is a list of the captured black pieces.*)
 val get_captured_black : Tile.p list
 
+val tester_get_king_moves : board -> (int * int) list
+
+val tester_can_block : board -> bool
+
+val tester_lst_attackers : board -> int
+
 (** [is_checkmate b] returns [true] if a king is in checkmate, and
     [false] otherwise.*)
 val is_checkmate : board -> bool
