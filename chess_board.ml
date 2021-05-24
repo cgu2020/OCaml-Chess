@@ -28,7 +28,7 @@ type queens = {
   mutable black_queen : int * int;
 }
 
-let q = { white_queen = (7, 4); black_queen = (0, 4) }
+let q = { white_queen = (7, 3); black_queen = (0, 3) }
 
 type attacked_positions = {
   mutable white : (int * int) list;
@@ -37,8 +37,8 @@ type attacked_positions = {
 
 let k =
   {
-    white_king = (7, 3);
-    black_king = (0, 3);
+    white_king = (7, 4);
+    black_king = (0, 4);
     white_king_moved = false;
     black_king_moved = false;
   }
@@ -369,19 +369,20 @@ let lw_rook_castle_condit board =
   && r.white_left_rook_moved = false
   && get_piece board.(7).(1) = Empty
   && get_piece board.(7).(2) = Empty
+  && get_piece board.(7).(3) = Empty
   && (not (List.mem (7, 2) attacking_pos.black))
-  && (not (List.mem (7, 1) attacking_pos.black))
-  && not (List.mem (7, 3) attacking_pos.black)
+  && (not (List.mem (7, 3) attacking_pos.black))
+  && not (List.mem (7, 4) attacking_pos.black)
 
 (* Checks whether white king is able to castle right. *)
 let rw_rook_castle_condit board =
   k.white_king_moved = false
   && r.white_right_rook_moved = false
-  && get_piece board.(7).(4) = Empty
   && get_piece board.(7).(5) = Empty
+  && get_piece board.(7).(6) = Empty
   && (not (List.mem (7, 4) attacking_pos.black))
-  && (not (List.mem (7, 3) attacking_pos.black))
-  && not (List.mem (7, 5) attacking_pos.black)
+  && (not (List.mem (7, 5) attacking_pos.black))
+  && not (List.mem (7, 6) attacking_pos.black)
 
 (* Checks whether black king is able to castle left. *)
 let lb_rook_castle_condit board =
@@ -389,34 +390,35 @@ let lb_rook_castle_condit board =
   && r.black_left_rook_moved = false
   && get_piece board.(0).(1) = Empty
   && get_piece board.(0).(2) = Empty
+  && get_piece board.(0).(3) = Empty
   && (not (List.mem (0, 2) attacking_pos.white))
-  && (not (List.mem (0, 1) attacking_pos.white))
+  && (not (List.mem (0, 4) attacking_pos.white))
   && not (List.mem (0, 3) attacking_pos.white)
 
 (* Checks whether black king is able to castle right. *)
 let rb_rook_castle_condit board =
   k.black_king_moved = false
   && r.black_right_rook_moved = false
-  && get_piece board.(0).(4) = Empty
   && get_piece board.(0).(5) = Empty
+  && get_piece board.(0).(6) = Empty
   && (not (List.mem (0, 4) attacking_pos.white))
-  && (not (List.mem (0, 3) attacking_pos.white))
-  && not (List.mem (0, 5) attacking_pos.white)
+  && (not (List.mem (0, 5) attacking_pos.white))
+  && not (List.mem (0, 6) attacking_pos.white)
 
 (*It returns the castle squares the king can go to*)
 let castle x y board =
   match get_color board.(x).(y) with
   | White ->
       if lw_rook_castle_condit board && rw_rook_castle_condit board then
-        [ (7, 1); (7, 5) ]
-      else if lw_rook_castle_condit board then [ (7, 1) ]
-      else if rw_rook_castle_condit board then [ (7, 5) ]
+        [ (7, 2); (7, 6) ]
+      else if lw_rook_castle_condit board then [ (7, 2) ]
+      else if rw_rook_castle_condit board then [ (7, 6) ]
       else []
   | Black ->
       if lb_rook_castle_condit board && rb_rook_castle_condit board then
-        [ (0, 1); (0, 5) ]
-      else if lb_rook_castle_condit board then [ (0, 1) ]
-      else if rb_rook_castle_condit board then [ (0, 5) ]
+        [ (0, 2); (0, 6) ]
+      else if lb_rook_castle_condit board then [ (0, 2) ]
+      else if rb_rook_castle_condit board then [ (0, 6) ]
       else []
   | None -> []
 
@@ -433,6 +435,7 @@ let possible_moves x y board =
   | Pawn -> pawn_moves x y board
   | Empty -> []
 
+(*Returns the possible moves for each square not including kings*)
 let possible_moves_without_king x y board =
   let color = get_color board.(x).(y) in
   match get_piece board.(x).(y) with
@@ -456,6 +459,7 @@ let attacking_moves x y board =
   | Pawn -> pawn_attacking_moves x y board
   | Empty -> []
 
+(*Returns attacking moves on the square x y not including kings*)
 let attacking_moves_without_king x y board =
   let color = get_color board.(x).(y) in
   match get_piece board.(x).(y) with
@@ -468,8 +472,8 @@ let attacking_moves_without_king x y board =
   | Empty -> []
 
 let starterboard =
-  "r,n,b,k,q,b,n,r/p,p,p,p,p,p,p,p/ , , , , , , , / , , , , , , , / , \
-   , , , , , , / , , , , , , , /P,P,P,P,P,P,P,P/R,N,B,K,Q,B,N,R"
+  "r,n,b,q,k,b,n,r/p,p,p,p,p,p,p,p/ , , , , , , , / , , , , , , , / , \
+   , , , , , , / , , , , , , , /P,P,P,P,P,P,P,P/R,N,B,Q,K,B,N,R"
 
 let string_to_lists (s : string) =
   let r = String.split_on_char '/' s in
@@ -689,28 +693,7 @@ let counter_check x y x2 y2 b ck =
       | _ -> failwith "impossible")
   | _ -> List.mem (x2, y2) (get_counter_squares ck b)
 
-let rec attackers_without_king_row r c b wlst blst =
-  match c with
-  | 8 -> (wlst, blst)
-  | y ->
-      if get_color b.(r).(c) = White then
-        attackers_without_king_row r (c + 1) b
-          (wlst @ attacking_moves_without_king r c b)
-          blst
-      else if get_color b.(r).(c) = Black then
-        attackers_without_king_row r (c + 1) b wlst
-          (blst @ attacking_moves_without_king r c b)
-      else attackers_without_king_row r (c + 1) b wlst blst
-
-(*Returns a tuple of white's attacking squares and blacks attacking
-  squares*)
-let rec attackers_without_king r b wlst blst =
-  match r with
-  | 8 -> (wlst, blst)
-  | x ->
-      let tup = attackers_without_king_row x 0 b [] [] in
-      attackers_without_king (r + 1) b (wlst @ fst tup) (blst @ snd tup)
-
+(*Helper for all_possible_moves_without_king*)
 let rec all_possible_moves_without_king_row r c b wlst blst =
   match c with
   | 8 -> (wlst, blst)
@@ -724,6 +707,8 @@ let rec all_possible_moves_without_king_row r c b wlst blst =
           (blst @ possible_moves_without_king r c b)
       else all_possible_moves_without_king_row r (c + 1) b wlst blst
 
+(*Returns a (int * int) list of all the possible coordinates each player
+  can go to *)
 let rec all_possible_moves_without_king r b wlst blst =
   match r with
   | 8 -> (wlst, blst)
@@ -743,8 +728,8 @@ let rec can_block_helper
       else can_block_helper t counter_squares
   | [] -> false
 
-(*Given the color of the king ck, this method returns true if the a same
-  colored piece can block a check or take that piece*)
+(*Given the color of the king ck, this method returns true if a same
+  colored piece can block a check or take the piece checking the king*)
 let can_block ck b =
   let counter_squares = get_counter_squares ck b in
   match ck with
@@ -760,6 +745,7 @@ let tester_can_block b = can_block Tile.White b
 
 (*let counter_squares = get_counter_squares ck*)
 
+(*Returns true if a player is in checkmate*)
 let is_checkmate b =
   if in_check Tile.White then
     let r = fst k.white_king in
@@ -774,27 +760,12 @@ let is_checkmate b =
     let r = fst k.black_king in
     let c = snd k.black_king in
     let kmoves = possible_moves r c b in
-    not (List.length (get_possible_king_moves r c kmoves [] b) = 0)
+    let lst_attackers = lst_of_attackers 0 b [] Tile.Black in
+    List.length (get_possible_king_moves r c kmoves [] b) = 0
+    &&
+    if List.length lst_attackers > 1 then true
+    else not (can_block Tile.Black b)
   else false
-
-(*Returns true if a player is in checkmate*)
-(*let is_checkmate b = if in_check Tile.White then let r = fst
-  k.white_king in let c = snd k.white_king in let kmoves =
-  possible_moves r c b in let whites_attacking_squares = fst
-  (attackers_without_king 0 b [] []) in if not (List.length
-  (get_possible_king_moves r c kmoves [] b) = 0) then false else if
-  List.length (lst_of_attackers 0 b [] Tile.White) > 1 then true else
-  let a = List.nth (lst_of_attackers 0 b [] Tile.White) 0 in not
-  (List.mem a whites_attacking_squares) (*check number of attackers is 1
-  or greater*) (*or if king has no moves and all possible moves of king
-  colored pieces can't go to counter squres *) else if in_check
-  Tile.Black then let r = fst k.black_king in let c = snd k.black_king
-  in let kmoves = possible_moves r c b in let blacks_attacking_squares =
-  snd (attackers_without_king 0 b [] []) in if not (List.length
-  (get_possible_king_moves r c kmoves [] b) = 0) then false else if
-  List.length (lst_of_attackers 0 b [] Tile.Black) > 1 then true else
-  let a = List.nth (lst_of_attackers 0 b [] Tile.Black) 0 in not
-  (List.mem a blacks_attacking_squares) else false*)
 
 (*This method returns true if the two coordinates are valid as a move *)
 let check_validity
@@ -848,17 +819,17 @@ let pawn_to_queen x2 y2 c b =
    it moves the rook to its respective square.*)
 let check_castle x y x2 y2 b =
   match ((x, y), (x2, y2)) with
-  | (7, 3), (7, 1) ->
-      b.(7).(2) <- b.(7).(0);
+  | (7, 4), (7, 2) ->
+      b.(7).(3) <- b.(7).(0);
       b.(7).(0) <- empty_tile
-  | (7, 3), (7, 5) ->
-      b.(7).(4) <- b.(7).(7);
+  | (7, 4), (7, 6) ->
+      b.(7).(5) <- b.(7).(7);
       b.(7).(7) <- empty_tile
-  | (0, 3), (0, 1) ->
-      b.(0).(2) <- b.(0).(0);
+  | (0, 4), (0, 2) ->
+      b.(0).(3) <- b.(0).(0);
       b.(0).(0) <- empty_tile
-  | (0, 3), (0, 5) ->
-      b.(0).(4) <- b.(0).(7);
+  | (0, 4), (0, 6) ->
+      b.(0).(5) <- b.(0).(7);
       b.(0).(7) <- empty_tile
   | _, _ -> ()
 
