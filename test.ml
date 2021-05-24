@@ -15,10 +15,6 @@ let checkmatepos =
   "r,n,b,k, ,b,n,r/p,p,p,p,p, ,p,p/ , , , , , , , / , , , , ,p, ,q/ , \
    , , ,P, , , / , , ,P, , , , /P,P,P, , ,P,P,P/R,N,B,K,Q,B,N,R"
 
-let b = init
-
-let _ = initialize b (string_to_lists starterboard) 0
-
 let cmp_set_like_lists lst1 lst2 =
   let uniq1 = List.sort_uniq compare lst1 in
   let uniq2 = List.sort_uniq compare lst2 in
@@ -75,22 +71,3 @@ let check_test name expected_output : test =
 
 let checkmate_test name b expected_output : test =
   name >:: fun _ -> assert_equal expected_output (is_checkmate b)
-
-let tile_tests =
-  [
-    get_piece_test "Rook Check" b 0 0 Rook;
-    get_piece_test "Knight Check" b 0 1 Knight;
-    get_piece_test "Bishop Check" b 0 2 Bishop;
-    get_piece_test "Queen Check" b 0 3 Queen;
-    get_piece_test "King Check" b 7 4 King;
-    get_piece_test "Rook Check" b 3 0 Empty;
-    get_color_test "White Piece Color Check" b 0 5 Black;
-    get_color_test "Black Piece Color Check" b 6 6 White;
-    get_color_test "No Piece Color Check" b 3 0 None;
-    point_value_test "Rook Value" b 0 0 5;
-    point_value_test "Empty Value" b 3 0 0;
-  ]
-
-let suite = "test suite for Chess" >::: List.flatten [ tile_tests ]
-
-let _ = run_test_tt_main suite
