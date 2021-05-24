@@ -37,6 +37,7 @@ val get_captured_white : Tile.p list
 (** [get_captured_white] is a list of the captured black pieces.*)
 val get_captured_black : Tile.p list
 
+(**Use these three methods to print in the text game, helps debug*)
 val tester_get_king_moves : board -> (int * int) list
 
 val tester_can_block : board -> bool
