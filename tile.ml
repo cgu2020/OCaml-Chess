@@ -1,5 +1,3 @@
-open Js_of_ocaml
-
 type p =
   | Empty
   | Rook

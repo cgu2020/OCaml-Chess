@@ -54,7 +54,7 @@ let posib_moves_test name row col expected_output : test =
 let white_score_test name b x y x2 y2 expected_output : test =
   name >:: fun _ ->
   let filler = check_validity b x y x2 y2 0 in
-  move_piece b x y x2 y2;
+  let () = move_piece b x y x2 y2;
   assert_equal expected_output get_white_score
 
 let black_score_test name expected_output : test =
