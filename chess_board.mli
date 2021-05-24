@@ -50,7 +50,6 @@ val is_checkmate : board -> bool
 
 (** [in_check c] returns whether the c colored king is in check.*)
 val in_check : Tile.c -> bool
-
 (** [check_validity b x y x2 y2 c] is [true] iff moving (x,y) to (x2,y2)
     is a valid move in the state of the game. Examples of returning
     [false] includes moving another piece when the king is in check,

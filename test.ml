@@ -7,9 +7,9 @@ let test_board =
   "r,n,b,k,q,b,n,r/p, ,p,p, , , , / ,p, , ,p,p, , / , , ,R, , ,p, / , \
    , , , , , , / , ,P,P, ,N, ,p/P,P, , ,P,P,P,P/ ,N,B,K,Q,B, ,R"
 
-let board2 =
-  "r, ,b,k,q,b,n,r/p,p,p, ,p,p,p,p / , ,n, , , , , / , , ,p, , , , / , \
-   , , ,P, , , / , , , , , , , /P,P,P,P, ,P,P,P/R,N,B,K,Q,B,N,R"
+(*let board2 = "r, ,b,k,q,b,n,r/p,p,p, ,p,p,p,p / , ,n, , , , , / , ,
+  ,p, , , , / , \ , , ,P, , , / , , , , , , , /P,P,P,P,
+  ,P,P,P/R,N,B,K,Q,B,N,R"*)
 
 let checkmatepos =
   "r,n,b,k, ,b,n,r/p,p,p,p,p, ,p,p/ , , , , , , , / , , , , ,p, ,q/ , \
