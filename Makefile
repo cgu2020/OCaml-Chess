@@ -33,7 +33,7 @@ finalcheck:
 	@bash check.sh final
 
 zip:
-	zip chess.zip *.ml* *.txt *.sh _tags .merlin .ocamlformat .ocamlinit Makefile	
+	zip chess.zip *.ml* *.txt *.sh _tags .merlin .ocamlformat .ocamlinit Makefile	dune dune-project index.html
 	
 docs: docs-public docs-private
 	
