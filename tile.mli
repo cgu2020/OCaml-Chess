@@ -1,7 +1,14 @@
+(** Representation of the tiles and pieces on a chessboard
+
+    This module represents the state of each tile on the chessboard:
+    whether there is a piece on it and if so, what kind, the colors of
+    the pieces and a link to an img that that tile type.*)
 open Js_of_ocaml
 
+(** Abstract type for the tiles on a chessboard*)
 type tile
 
+(** Types of pieces on a tile*)
 type p =
   | Empty
   | Rook
@@ -11,11 +18,13 @@ type p =
   | Queen
   | King
 
+(** Color of the piece on a tile*)
 type c =
   | None
   | White
   | Black
 
+(** img for a piece on a tile*)
 type img =
   | Image of string
   | No

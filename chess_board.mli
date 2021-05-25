@@ -1,9 +1,16 @@
+(** Chessboard and all the functions on a board
+
+    Module represents the state of a chessboard and includes all
+    functions that can be made on a board such as checking for
+    checkmate, moving a piece, and initializing chessboards*)
+
 (** The abstract type that represents a chessboard. *)
 type board = Tile.tile array array
 
 (** The abstract type that represents a scoreboard.*)
 type scoreboard
 
+(** Raised when an invalid move attempted*)
 exception InvalidMove
 
 (** [possible_moves x y b] is a set-like list of all the tiles that a
@@ -37,11 +44,13 @@ val get_captured_white : Tile.p list
 (** [get_captured_white] is a list of the captured black pieces.*)
 val get_captured_black : Tile.p list
 
-(**Use these three methods to print in the text game, helps debug*)
+(**Used to print in the text game, helps debug*)
 val tester_get_king_moves : board -> (int * int) list
 
+(**Used to print in the text game, helps debug*)
 val tester_can_block : board -> bool
 
+(**Used to print in the text game, helps debug*)
 val tester_lst_attackers : board -> int
 
 (** [is_checkmate b] returns [true] if a king is in checkmate, and
@@ -50,6 +59,7 @@ val is_checkmate : board -> bool
 
 (** [in_check c] returns whether the c colored king is in check.*)
 val in_check : Tile.c -> bool
+
 (** [check_validity b x y x2 y2 c] is [true] iff moving (x,y) to (x2,y2)
     is a valid move in the state of the game. Examples of returning
     [false] includes moving another piece when the king is in check,

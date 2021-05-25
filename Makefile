@@ -1,8 +1,8 @@
-MODULES=chess_board command game_logic tile main
+MODULES=chess_board command tile main
 OBJECTS=$(MODULES:=.cmo)
 
 MLS=$(MODULES:=.ml)
-MLIS= chess_board.mli command.mli game_logic.mli tile.mli
+MLIS= chess_board.mli command.mli tile.mli
 TEST=test.byte
 MAIN=main.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind

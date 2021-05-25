@@ -80,7 +80,13 @@ let get_lst s =
   match parse s with
   | Move o -> o
   | InvalidMove -> failwith "impossible"
-  | Quit -> failwith "impossible"
+  | Quit -> failwith ""
+
+let quit s =
+  match parse s with
+  | Move o -> false
+  | InvalidMove -> false
+  | Quit -> true
 
 let rec get_coords lst =
   match lst with
@@ -122,10 +128,10 @@ let rec play_game b c =
       play_game b (c + 1))
     else (
       print_string "Invalid move, try again\n";
-      play_game b c)
+      if not (quit i) then play_game b c)
   else (
     print_string "Invalid move, try again\n";
-    play_game b c)
+    if not (quit i) then play_game b c)
 
 let main () =
   let b = init in

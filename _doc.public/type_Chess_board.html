@@ -9,7 +9,6 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="Chess_board" rel="Chapter" href="Chess_board.html">
 <link title="Command" rel="Chapter" href="Command.html">
-<link title="Game_logic" rel="Chapter" href="Game_logic.html">
 <link title="Tile" rel="Chapter" href="Tile.html"><title>Chess_board</title>
 </head>
 <body>
@@ -22,11 +21,16 @@
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;starterboard&nbsp;:&nbsp;string<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;initialize&nbsp;:&nbsp;<span class="constructor">Chess_board</span>.board&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;list&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;init&nbsp;:&nbsp;<span class="constructor">Chess_board</span>.board<br>
-&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;check_validity&nbsp;:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Chess_board</span>.board&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_white_score&nbsp;:&nbsp;int<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_black_score&nbsp;:&nbsp;int<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_captured_white&nbsp;:&nbsp;<span class="constructor">Tile</span>.p&nbsp;list<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;get_captured_black&nbsp;:&nbsp;<span class="constructor">Tile</span>.p&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tester_get_king_moves&nbsp;:&nbsp;<span class="constructor">Chess_board</span>.board&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(int&nbsp;*&nbsp;int)&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tester_can_block&nbsp;:&nbsp;<span class="constructor">Chess_board</span>.board&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;tester_lst_attackers&nbsp;:&nbsp;<span class="constructor">Chess_board</span>.board&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;is_checkmate&nbsp;:&nbsp;<span class="constructor">Chess_board</span>.board&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;in_check&nbsp;:&nbsp;<span class="constructor">Tile</span>.c&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;check_validity&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="constructor">Chess_board</span>.board&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
 &nbsp;&nbsp;<span class="keyword">val</span>&nbsp;move_piece&nbsp;:&nbsp;<span class="constructor">Chess_board</span>.board&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
 <span class="keyword">end</span></code></body></html>

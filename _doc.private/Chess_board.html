@@ -13,7 +13,6 @@
 <link title="Index of modules" rel=Appendix href="index_modules.html">
 <link title="Chess_board" rel="Chapter" href="Chess_board.html">
 <link title="Command" rel="Chapter" href="Command.html">
-<link title="Game_logic" rel="Chapter" href="Game_logic.html">
 <link title="Tile" rel="Chapter" href="Tile.html">
 <link title="Main" rel="Chapter" href="Main.html"><title>Chess_board</title>
 </head>
@@ -25,14 +24,28 @@
 
 <pre><span id="MODULEChess_board"><span class="keyword">module</span> Chess_board</span>: <code class="code">sig</code> <a href="Chess_board.html">..</a> <code class="code">end</code></pre><div class="info module top">
 <div class="info-desc">
-<p>The abstract type that represents a chessboard.</p>
+<p>Chessboard and all the functions on a board</p>
+
+<p>Module represents the state of a chessboard and includes all
+    functions that can be made on a board such as checking for
+    checkmate, moving a piece, and initializing chessboards</p>
 </div>
 </div>
 <hr width="100%">
 
 <pre><span id="EXCEPTIONInvalidMove"><span class="keyword">exception</span> InvalidMove</span></pre>
+<div class="info ">
+<div class="info-desc">
+<p>Raised when an invalid move attempted</p>
+</div>
+</div>
 
 <pre><span id="TYPEboard"><span class="keyword">type</span> <code class="type"></code>board</span> = <code class="type"><a href="Tile.html#TYPEtile">Tile.tile</a> array array</code> </pre>
+<div class="info ">
+<div class="info-desc">
+<p>The abstract type that represents a chessboard.</p>
+</div>
+</div>
 
 
 <pre><code><span id="TYPEc"><span class="keyword">type</span> <code class="type"></code>c</span> = </code></pre><table class="typetable">
@@ -91,6 +104,11 @@
 </tr></table>
 <code>}</code>
 
+<div class="info ">
+<div class="info-desc">
+<p>The abstract type that represents a scoreboard.</p>
+</div>
+</div>
 
 
 <pre><code><span id="TYPEkings"><span class="keyword">type</span> <code class="type"></code>kings</span> = {</code></pre><table class="typetable">
@@ -270,50 +288,136 @@
 <pre><span id="VALcastle"><span class="keyword">val</span> castle</span> : <code class="type">int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre>
 <pre><span id="VALpossible_moves"><span class="keyword">val</span> possible_moves</span> : <code class="type">int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre><div class="info ">
 <div class="info-desc">
-<p><code class="code">possible_moves a</code> is a set-like list of all the tiles that a can
-    move to.</p>
+<p><code class="code">possible_moves x y b</code> is a set-like list of all the tiles that a
+    piece at position (x,y) can move to.</p>
 </div>
 </div>
 
+<pre><span id="VALpossible_moves_without_king"><span class="keyword">val</span> possible_moves_without_king</span> : <code class="type">int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre>
 <pre><span id="VALattacking_moves"><span class="keyword">val</span> attacking_moves</span> : <code class="type">int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre>
-<pre><span id="VALstarterboard"><span class="keyword">val</span> starterboard</span> : <code class="type">string</code></pre>
-<pre><span id="VALstring_to_lists"><span class="keyword">val</span> string_to_lists</span> : <code class="type">string -> string list list</code></pre>
+<pre><span id="VALattacking_moves_without_king"><span class="keyword">val</span> attacking_moves_without_king</span> : <code class="type">int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre>
+<pre><span id="VALstarterboard"><span class="keyword">val</span> starterboard</span> : <code class="type">string</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">starterboard</code> is the initial board state of a chess game as a
+    string.</p>
+</div>
+</div>
+
+<pre><span id="VALstring_to_lists"><span class="keyword">val</span> string_to_lists</span> : <code class="type">string -> string list list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">string_to_lists s</code> is a string list list representation of s, where
+    each string list is created by splitting on character '/' in s.</p>
+</div>
+</div>
+
 <pre><span id="VALinitialize_row"><span class="keyword">val</span> initialize_row</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a> -> int -> int -> string list -> unit</code></pre>
-<pre><span id="VALinitialize"><span class="keyword">val</span> initialize</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a> -> string list list -> int -> unit</code></pre>
-<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a></code></pre>
+<pre><span id="VALinitialize"><span class="keyword">val</span> initialize</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a> -> string list list -> int -> unit</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">initialize b s 0</code> turns the string representation, s, of the board
+    into a board of tiles, b.</p>
+</div>
+</div>
+
+<pre><span id="VALinit"><span class="keyword">val</span> init</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a></code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">init</code> is the empty board.</p>
+</div>
+</div>
+
 <pre><span id="VALprint_pairs"><span class="keyword">val</span> print_pairs</span> : <code class="type">(int * int) list -> unit</code></pre>
 <pre><span id="VALupdate_attackers_row"><span class="keyword">val</span> update_attackers_row</span> : <code class="type">int -><br>       int -><br>       <a href="Tile.html#TYPEtile">Tile.tile</a> array array -><br>       (int * int) list -> (int * int) list -> (int * int) list * (int * int) list</code></pre>
 <pre><span id="VALupdate_attackers"><span class="keyword">val</span> update_attackers</span> : <code class="type">int -><br>       <a href="Tile.html#TYPEtile">Tile.tile</a> array array -><br>       (int * int) list -> (int * int) list -> (int * int) list * (int * int) list</code></pre>
 <pre><span id="VALking_attacked"><span class="keyword">val</span> king_attacked</span> : <code class="type">int -> int -> <a href="Tile.html#TYPEc">Tile.c</a> -> bool</code></pre>
 <pre><span id="VALmoving_in_check"><span class="keyword">val</span> moving_in_check</span> : <code class="type"><a href="Tile.html#TYPEtile">Tile.tile</a> array array -> int -> int -> int -> int -> <a href="Tile.html#TYPEc">Tile.c</a> -> bool</code></pre>
-<pre><span id="VALin_check"><span class="keyword">val</span> in_check</span> : <code class="type"><a href="Tile.html#TYPEc">Tile.c</a> -> bool</code></pre>
+<pre><span id="VALin_check"><span class="keyword">val</span> in_check</span> : <code class="type"><a href="Tile.html#TYPEc">Tile.c</a> -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">in_check c</code> returns whether the c colored king is in check.</p>
+</div>
+</div>
+
 <pre><span id="VALlst_of_attackers_row"><span class="keyword">val</span> lst_of_attackers_row</span> : <code class="type">int -><br>       int -><br>       <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list -> <a href="Tile.html#TYPEc">Tile.c</a> -> (int * int) list</code></pre>
 <pre><span id="VALlst_of_attackers"><span class="keyword">val</span> lst_of_attackers</span> : <code class="type">int -><br>       <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list -> <a href="Tile.html#TYPEc">Tile.c</a> -> (int * int) list</code></pre>
-<pre><span id="VALget_king_moves_white"><span class="keyword">val</span> get_king_moves_white</span> : <code class="type">(int * int) list -> (int * int) list -> (int * int) list</code></pre>
-<pre><span id="VALget_king_moves_black"><span class="keyword">val</span> get_king_moves_black</span> : <code class="type">(int * int) list -> (int * int) list -> (int * int) list</code></pre>
-<pre><span id="VALget_king_moves"><span class="keyword">val</span> get_king_moves</span> : <code class="type"><a href="Tile.html#TYPEc">Tile.c</a> -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre>
+<pre><span id="VALtester_lst_attackers"><span class="keyword">val</span> tester_lst_attackers</span> : <code class="type"><a href="Tile.html#TYPEtile">Tile.tile</a> array array -> int</code></pre><div class="info ">
+<div class="info-desc">
+<p>Used to print in the text game, helps debug</p>
+</div>
+</div>
+
 <pre><span id="VALrook_line"><span class="keyword">val</span> rook_line</span> : <code class="type">int -><br>       int -> int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> 'a list -> (int * int) list</code></pre>
 <pre><span id="VALbishop_line"><span class="keyword">val</span> bishop_line</span> : <code class="type">int -><br>       int -> int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> 'a list -> (int * int) list</code></pre>
 <pre><span id="VALqueen_line"><span class="keyword">val</span> queen_line</span> : <code class="type">int -><br>       int -> int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> 'a list -> (int * int) list</code></pre>
-<pre><span id="VALget_king_pos"><span class="keyword">val</span> get_king_pos</span> : <code class="type"><a href="Tile.html#TYPEc">Tile.c</a> -> int * int</code></pre>
 <pre><span id="VALcan_move"><span class="keyword">val</span> can_move</span> : <code class="type">int -> int -> int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> bool</code></pre>
 <pre><span id="VALget_possible_king_moves"><span class="keyword">val</span> get_possible_king_moves</span> : <code class="type">int -><br>       int -><br>       (int * int) list -><br>       (int * int) list -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre>
+<pre><span id="VALtester_get_king_moves"><span class="keyword">val</span> tester_get_king_moves</span> : <code class="type"><a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre><div class="info ">
+<div class="info-desc">
+<p>Used to print in the text game, helps debug</p>
+</div>
+</div>
+
+<pre><span id="VALget_king_pos"><span class="keyword">val</span> get_king_pos</span> : <code class="type"><a href="Tile.html#TYPEc">Tile.c</a> -> int * int</code></pre>
 <pre><span id="VALin_line_with_king"><span class="keyword">val</span> in_line_with_king</span> : <code class="type">int -> int -> <a href="Tile.html#TYPEc">Tile.c</a> -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre>
 <pre><span id="VALget_counter_squares"><span class="keyword">val</span> get_counter_squares</span> : <code class="type"><a href="Tile.html#TYPEc">Tile.c</a> -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> (int * int) list</code></pre>
 <pre><span id="VALcounter_check"><span class="keyword">val</span> counter_check</span> : <code class="type">int -> int -> int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> <a href="Tile.html#TYPEc">Tile.c</a> -> bool</code></pre>
-<pre><span id="VALis_checkmate"><span class="keyword">val</span> is_checkmate</span> : <code class="type"><a href="Tile.html#TYPEtile">Tile.tile</a> array array -> bool</code></pre>
-<pre><span id="VALcheck_validity"><span class="keyword">val</span> check_validity</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a> -> int -> int -> int -> int -> int -> bool</code></pre>
-<pre><span id="VALget_white_score"><span class="keyword">val</span> get_white_score</span> : <code class="type">int</code></pre>
-<pre><span id="VALget_black_score"><span class="keyword">val</span> get_black_score</span> : <code class="type">int</code></pre>
-<pre><span id="VALget_captured_black"><span class="keyword">val</span> get_captured_black</span> : <code class="type"><a href="Tile.html#TYPEp">Tile.p</a> list</code></pre>
-<pre><span id="VALget_captured_white"><span class="keyword">val</span> get_captured_white</span> : <code class="type"><a href="Tile.html#TYPEp">Tile.p</a> list</code></pre>
+<pre><span id="VALall_possible_moves_without_king_row"><span class="keyword">val</span> all_possible_moves_without_king_row</span> : <code class="type">int -><br>       int -><br>       <a href="Tile.html#TYPEtile">Tile.tile</a> array array -><br>       (int * int) list -> (int * int) list -> (int * int) list * (int * int) list</code></pre>
+<pre><span id="VALall_possible_moves_without_king"><span class="keyword">val</span> all_possible_moves_without_king</span> : <code class="type">int -><br>       <a href="Tile.html#TYPEtile">Tile.tile</a> array array -><br>       (int * int) list -> (int * int) list -> (int * int) list * (int * int) list</code></pre>
+<pre><span id="VALcan_block_helper"><span class="keyword">val</span> can_block_helper</span> : <code class="type">(int * int) list -> (int * int) list -> bool</code></pre>
+<pre><span id="VALcan_block"><span class="keyword">val</span> can_block</span> : <code class="type"><a href="Tile.html#TYPEc">Tile.c</a> -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> bool</code></pre>
+<pre><span id="VALtester_can_block"><span class="keyword">val</span> tester_can_block</span> : <code class="type"><a href="Tile.html#TYPEtile">Tile.tile</a> array array -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p>Used to print in the text game, helps debug</p>
+</div>
+</div>
+
+<pre><span id="VALis_checkmate"><span class="keyword">val</span> is_checkmate</span> : <code class="type"><a href="Tile.html#TYPEtile">Tile.tile</a> array array -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">is_checkmate b</code> returns <code class="code">true</code> if a king is in checkmate, and
+    <code class="code">false</code> otherwise.</p>
+</div>
+</div>
+
+<pre><span id="VALcheck_validity"><span class="keyword">val</span> check_validity</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a> -> int -> int -> int -> int -> int -> bool</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">check_validity b x y x2 y2 c</code> is <code class="code">true</code> iff moving (x,y) to (x2,y2)
+    is a valid move in the state of the game. Examples of returning
+    <code class="code">false</code> includes moving another piece when the king is in check,
+    moving the king into a checked square, and castling in failed
+    conditions.</p>
+</div>
+</div>
+
+<pre><span id="VALget_white_score"><span class="keyword">val</span> get_white_score</span> : <code class="type">int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_white_score</code> is white's score.</p>
+</div>
+</div>
+
+<pre><span id="VALget_black_score"><span class="keyword">val</span> get_black_score</span> : <code class="type">int</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_black_score</code> is blacks's score.</p>
+</div>
+</div>
+
+<pre><span id="VALget_captured_black"><span class="keyword">val</span> get_captured_black</span> : <code class="type"><a href="Tile.html#TYPEp">Tile.p</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_captured_white</code> is a list of the captured black pieces.</p>
+</div>
+</div>
+
+<pre><span id="VALget_captured_white"><span class="keyword">val</span> get_captured_white</span> : <code class="type"><a href="Tile.html#TYPEp">Tile.p</a> list</code></pre><div class="info ">
+<div class="info-desc">
+<p><code class="code">get_captured_white</code> is a list of the captured white pieces.</p>
+</div>
+</div>
+
 <pre><span id="VALpawn_to_queen"><span class="keyword">val</span> pawn_to_queen</span> : <code class="type">int -> int -> <a href="Tile.html#TYPEc">Tile.c</a> -> 'a array array -> unit</code></pre>
 <pre><span id="VALcheck_castle"><span class="keyword">val</span> check_castle</span> : <code class="type">int -> int -> int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> unit</code></pre>
+<pre><span id="VALupdate_rook_move"><span class="keyword">val</span> update_rook_move</span> : <code class="type">int -> int -> int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> unit</code></pre>
+<pre><span id="VALupdate_king_move"><span class="keyword">val</span> update_king_move</span> : <code class="type">int -> int -> int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> unit</code></pre>
+<pre><span id="VALupdate_queen_move"><span class="keyword">val</span> update_queen_move</span> : <code class="type">int -> int -> int -> int -> <a href="Tile.html#TYPEtile">Tile.tile</a> array array -> unit</code></pre>
 <pre><span id="VALmove_piece"><span class="keyword">val</span> move_piece</span> : <code class="type"><a href="Chess_board.html#TYPEboard">board</a> -> int -> int -> int -> int -> bool</code></pre><div class="info ">
 <div class="info-desc">
-<p><code class="code">move_piece b x1 y1 x2 y2 c</code> clears tile (x1,y1) and replaces tile
-    (x2,y2) with tile (x1, y1). Invalid move if the int c does not match
-    the color Raises <code class="code">Invalid t</code> if <code class="code">t</code> is not a valid tile to move to.</p>
+<p><code class="code">move_piece b x1 y1 x2 y2</code> moves the piece on b.(x1).(y1) to
+    b.(x2).(y2). There is a precondition that the move is valid.</p>
 </div>
 </div>
 </body></html>

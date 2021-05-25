@@ -1,3 +1,22 @@
+(** Test plan: There were some problems with testing mutable matrixes.
+    If 2 chessboards were initialized, they would always have the same
+    values as each other. Thus, for each board and scenario, there are
+    seperate test files. test.ml contains all the testing functions.
+    test1.ml tests the starting board of a chess game by checking the
+    tile on a specific coordinate. test2.ml tests the possible moves of
+    several pieces which includes potential capture moves by pawns,
+    knights, etc.. test3.ml tests a checkmate position as well as the
+    move_piece function. And test4.ml and test 5.ml test King-side and
+    Queen-side castling respectively. There are too many chess
+    possibilites to do glass box testing, thus we did black box testing.
+    In addition to testing key features, we did a lot more manual
+    testing. For example, make play is a console implementation of Chess
+    that has some debugging features such as showing whether white is in
+    checkmate, if white can block to avoid checkmate, and the number of
+    attacks on white. With all the key features of chess tested
+    (checkmate, castling, moving pieces, capturing), the system is
+    correct.*)
+
 open OUnit2
 open Chess_board
 open Tile
@@ -6,10 +25,6 @@ open Command
 let test_board =
   "r,n,b,k,q,b,n,r/p, ,p,p, , , , / ,p, , ,p,p, , / , , ,R, , ,p, / , \
    , , , , , , / , ,P,P, ,N, ,p/P,P, , ,P,P,P,P/ ,N,B,K,Q,B, ,R"
-
-(*let board2 = "r, ,b,k,q,b,n,r/p,p,p, ,p,p,p,p / , ,n, , , , , / , ,
-  ,p, , , , / , \ , , ,P, , , / , , , , , , , /P,P,P,P,
-  ,P,P,P/R,N,B,K,Q,B,N,R"*)
 
 let checkmatepos =
   "r,n,b,k, ,b,n,r/p,p,p,p,p, ,p,p/ , , , , , , , / , , , , ,p, ,q/ , \
