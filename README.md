@@ -14,7 +14,7 @@ OCamlChess is a HTML 5 Canvas implementation of Chess written entirely in OCaml.
    `make play`
 
 ## Instructions for terminal chess
-`d2 d3` - attempt to move piece at (d, 2) to (d, 3)
+`d3 d4` - attempt to move piece at (d, 3) to (d, 4)
 `quit` - end the game
 
 ## Authors
