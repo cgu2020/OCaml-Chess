@@ -1,6 +1,7 @@
 [OCamlChess]
 =============
 OCamlChess is a HTML 5 Canvas implementation of Chess written entirely in OCaml.
+http://ocamlchess.42web.io/
 
 ## Building
 1. Ensure these packages are installed js\_of\_ocaml (>= 3.9) js\_of\_ocaml\_lwt (>= 3.9) js\_of\_ocaml\_ppx (>= 3.9): 
